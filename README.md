@@ -17,6 +17,12 @@ To use MP3-PY, follow these steps:
  - shutil
  - rich
 
+## Demo
+First run on anything more than ~5 files. This is why I made the program so I wasnt really too worried about ironing out things too much. If anyone has interest though I can keep working on it. Ill probably do my 'roadmap' tasks and not much more unless other people find it useful. 
+
+https://user-images.githubusercontent.com/71906074/221419033-9617af86-928f-40ec-a9c1-9d011a2f248f.mp4
+
+
 ## Usage
 
 The MP3-PY tool includes two main commands: `create` and `view`.

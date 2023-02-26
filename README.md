@@ -23,21 +23,21 @@ The MP3-PY tool includes two main commands: `create` and `view`.
 
 ### Create Sub-Command
 The create sub-command has three optional arguments: --dirs, --formatfile, and --formatdir. These are used to process formatted MP3 files from a directory into artist directories and to format MP3 filenames according to a specific pattern.
-              `
+              
                 python mp3-py.py create --dirs DIRECTORY
                 python mp3-py.py create --formatfile FILENAME
                 python mp3-py.py create --formatdir DIRECTORY
-              `
+              
 ### View Sub-Command
 The view sub-command has three sub-commands: json, artists, and songs. The json sub-command has one optional argument: --dump, which is used to create a JSON of formatted MP3 files in a specified directory. The artists sub-command has two optional arguments: --tracks to list all artists in the dataset and their tracks, and --names to list all artists in the dataset. The songs sub-command has three optional arguments: --artist to specify the artist to display songs for, --id to search for a song by YouTube ID, and --name to search for a song by track title.
-              `
+              
                 python mp3-py.py view --data DATASET json --dump DIRECTORY
                 python mp3-py.py view --data DATASET artists --tracks
                 python mp3-py.py view --data DATASET artists --names
                 python mp3-py.py view --data DATASET songs --artist ARTIST
                 python mp3-py.py view --data DATASET songs --id YOUTUBE_ID
                 python mp3-py.py view --data DATASET songs --name TRACK_TITLE
-              `
+              
 ### MP3Create class
 The MP3Create class has three methods: dirs(), format_file(), and format_files_dir(). The dirs() method is used to process formatted MP3 files from a directory into artist directories. The format_file() method is used to format an MP3 filename according to a specific pattern. The format_files_dir() method is used to format MP3 filenames in a specified directory according to a specific pattern.
 

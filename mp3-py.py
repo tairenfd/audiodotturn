@@ -76,31 +76,42 @@ class MP3Create:
             format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
             if format_check:
                 return '$$'+_file
-            match_features = re.search(r'[fF]t\. (.+?)(?=([(]|[-]|[\[]))|\([fF]eat\. (.+?)\) ', file)
+            match_features = re.search(r'([fF]t\. |[wW]/)(.+?)(?=([(]|[-]|[\[]))|\([fF]eat\. (.+?)\) ', file)
             if match_features:
-                file = file.replace(match_features[0], '')
-            match_misc = re.search(r'\(.+?\)', file)
+                file = file.replace(match_features[0].rstrip('-(['), '')
+            match_misc = re.findall(r'\(.+?\)', file)
             if match_misc:
-                file = file.replace(match_misc[0], '')
+                for match in match_misc:
+                    file = file.replace(match, '')
+                    match_misc[match_misc.index(match)] = match.strip('()')
             match = re.search(r'^(.+?) - (.+?) (\[.+?\])?\.(.*$)', file)
+            print(file)
+            if not match:
+                match = re.search(r'(.+?).([\"\uFF02\'].+?[\"\uFF02\']).(\[.+?\])?\.(.*$)', file)
             if match:
                 if match_features:
-                    features = match_features.group(1)
-                    if features and match_features.group(3):
-                        features += match_features.group(3)
+                    features = match_features.group(2)
+                    if features and match_features.group(4):
+                        features += match_features.group(4)
                     elif features:
                         features = features
                     else:
-                        features = match_features.group(3)
+                        features = match_features.group(2)
                 else:
                     features = None
 
                 artist = match.group(1).strip() if match.group(1) else 'UNKNOWN'
                 title = match.group(2).strip() if match.group(2) else 'UNKNOWN'
+                if title == 'UNKNOWN':
+                    title_in_artist = re.search(r'(\".+?\")', artist)
+                    if title_in_artist:
+                        artist = artist.replace(title_in_artist, '')
+                        title = tile.replace('\uFF02', '')
+                        title = title.strip('"')
                 youtube_id = match.group(3).strip('[]') if match.group(3) else 'UNKNOWN'
                 filetype = match.group(4).strip() if match.group(4) else '.mp3'
                 features = features.strip() if features else 'UNKNOWN'
-                misc = match_misc[0].strip('()') if match_misc else 'UNKNOWN'
+                misc = ', '.join(match_misc).strip('()') if match_misc else 'UNKNOWN'
             
                 new_file = f"[{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}"
                 if _file != new_file:

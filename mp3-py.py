@@ -38,22 +38,36 @@ class MP3Create:
             artists = set()
             files = set()
             created = []
+            exts = (
+                '.mp3',
+                '.mp4',
+                '.wav',
+                '.m4a',
+                '.wma',
+                '.aac',
+                '.flac',
+                '.webm',
+                '.ogg',
+                '.opus',
+                '.flv'
+            )
             for filename in os.listdir(directory):
-                match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", filename)
-                if match:
-                    artist = match.group(1)
-                else:
-                    artist = "UNKNOWN"
-                files.add(artist)
-                artist_dir = f"{directory}/{artist.title()}"
-                if not os.path.exists(artist_dir):
-                    artists.add(artist)
-                    os.makedirs(artist_dir)
-                    created.append(f'                    -{artist_dir}/')
-                try:
-                    shutil.move(f"{directory}/{filename}", f"{artist_dir}/{filename}")
-                except:
-                    pass
+                if filename.endswith(exts):
+                    match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", filename)
+                    if match:
+                        artist = match.group(1)
+                    else:
+                        artist = "UNKNOWN"
+                    files.add(artist)
+                    artist_dir = f"{directory}/{artist.title()}"
+                    if not os.path.exists(artist_dir):
+                        artists.add(artist)
+                        os.makedirs(artist_dir)
+                        created.append(f'                    -{artist_dir}/')
+                    try:
+                        shutil.move(f"{directory}/{filename}", f"{artist_dir}/{filename}")
+                    except:
+                        pass
             msg = f'### Organized {len(files)} files for {len(artists)} artists.\n' + '#### Created directories:\n' + '\n'.join(created)
             return Markdown(msg)
     

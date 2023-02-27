@@ -8,7 +8,7 @@ MP3-PY is a tool designed to help organize MP3 files that have been downloaded u
 To use MP3-PY, follow these steps:
 
 1. Clone the MP3-PY repository to your local machine.
-3. Run the program using `python mp3-py.py`.
+2. Run the program using `python mp3-py.py`.
 
 
 ### Dependencies
@@ -22,6 +22,10 @@ To use MP3-PY, follow these steps:
 
 
 ## File formatting examples
+
+Default format output 
+
+        -> [{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}
 
 As of right now the file really just needs to end in ' [youtubeid].filetype' and it should be able to format it to an extent.
 
@@ -77,7 +81,8 @@ The create sub-command has three optional arguments: --dirs, --formatfile, and -
 
 The view sub-command has three sub-commands: json, artists, and songs. The json sub-command has one optional argument: --dump, which is used to create a JSON of formatted MP3 files in a specified directory. The artists sub-command has two optional arguments: --tracks to list all artists in the dataset and their tracks, and --names to list all artists in the dataset. The songs sub-command has three optional arguments: --artist to specify the artist to display songs for, --id to search for a song by YouTube ID, and --name to search for a song by track title.
               
-                python mp3-py.py view --data DATASET json --dump DIRECTORY
+                python mp3-py.py view --data DATASET json --dump DIRECTORY (DATASET will be overwritten or created)
+
                 python mp3-py.py view --data DATASET artists --tracks
                 python mp3-py.py view --data DATASET artists --names
                 python mp3-py.py view --data DATASET songs --artist ARTIST
@@ -139,7 +144,6 @@ The MP3View class has six methods: json_dump(), get_artists(), get_artists_track
 ## Roadmap
 
  - Allow to confirm/deny filename changes
- - Fix WSHH regex filtering in titles
  - General regex adjusting for broader use
  - Refactoring code for better readability and maintainability
  - Bug fixes and optimization

@@ -20,7 +20,7 @@ class MP3Create:
             already_formatted = ['\n## No Change:']
             for file in files_list:
                 if file.startswith('*****'):
-                    not_formatted.append(f'    - {file}')
+                    not_formatted.append(f"    - {file.lstrip('*')}")
                 elif file.startswith('$$'):
                     already_formatted.append(f"    - {file.lstrip('$$')}")
                 else:
@@ -36,6 +36,7 @@ class MP3Create:
         def dirs(self, directory):
             directory = directory.rstrip('/')
             artists = set()
+            files = set()
             created = []
             for filename in os.listdir(directory):
                 match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", filename)
@@ -43,29 +44,25 @@ class MP3Create:
                     artist = match.group(1)
                 else:
                     artist = "UNKNOWN"
-                artists.add(artist)
-                artist_dir = f"{directory}/{artist}"
+                files.add(artist)
+                artist_dir = f"{directory}/{artist.title()}"
                 if not os.path.exists(artist_dir):
+                    artists.add(artist)
                     os.makedirs(artist_dir)
                     created.append(f'                    -{artist_dir}/')
                 try:
                     shutil.move(f"{directory}/{filename}", f"{artist_dir}/{filename}")
                 except:
                     pass
-            msg = f'### Organized files for {len(artists)} artists.\n' + '#### Created directories:\n' + '\n'.join(created)
+            msg = f'### Organized {len(files)} files for {len(artists)} artists.\n' + '#### Created directories:\n' + '\n'.join(created)
             return Markdown(msg)
     
         def format_files_dir(self, directory):
             directory = directory.rstrip('/')
             try:
-                files_list = []
-                files = os.listdir(directory)
-                files = [f for f in files if os.path.isfile(directory+'/'+f)]
-                # print('\n'.join(files), '\n\n')
-                for file in files:
-                    files_list.append(self.format_file(file=file, directory=directory))
+                files_list = [self.format_file(file=f, directory=directory) for f in os.listdir(directory) if os.path.isfile(directory+'/'+f)]
                 formatted, not_formatted, already_formatted, stats = self.form_or_not(files_list)
-                return Markdown('\n'.join(formatted) + '\n'.join(not_formatted) + '\n'.join(already_formatted) + ''.join(stats))
+                return Markdown('\n'.join(formatted + not_formatted + already_formatted + stats))
             except Exception as error:
                 return Markdown(f'{error}')
 
@@ -76,68 +73,66 @@ class MP3Create:
             format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
             if format_check:
                 return '$$'+_file
+
             match_features = re.search(r'([fF]t\. |[wW]\/)(.+?)(?=([\'\"\"\"]|[(]|[-]|[\[]))|\([fF]eat\. (.+?)\)|([fF]eat\. (.+?)(?=([\'\"\"\"]|[(]|[-]|[\[])))', file)
             if match_features:
                 file = file.replace(match_features[0].rstrip('-(['), '')
+
             match_misc_1 = re.findall(r'\(.+?\)', file)
             match_misc_2 = re.findall(r'(\[.+?\]) +?', file)
             match_misc = match_misc_1 + match_misc_2
+
             if match_misc:
                 for match in match_misc:
                     file = file.replace(match, '').replace('  ', ' ')
                     match_misc[match_misc.index(match)] = match.strip('()[] ')
-            match = re.search(r'^(.+?) - (.+?) (\[\S+\])?\.(.*$)|^(.+) (\[\S+\])?\.(.*$)', file)
+            match = re.search(r'^(.+?)-(.+?) (\[\S+\])?\.(.*$)|^(.+) (\[\S+\])?\.(.*$)', file)
+
             if not match:
                 match = re.search(r'(.+?).([\"\uFF02\'].+?[\"\uFF02\']).(\[.+?\])?\.(.*$)', file)
-            if match:
+
+            if not match:
+                return f"*****{_file}"
+
+            else:
+                artist, title, features, misc, youtube_id, filetype = 'UNKNOWN', 'UNKNOWN', 'UNKNOWN', 'UNKNOWN', 'UNKNOWN', 'mp3'
                 if match_features:
                     features = ''
                     features += match_features.group(2) if match_features.group(2) else ''
                     features += match_features.group(4) if match_features.group(4) else ''
                     features += match_features.group(6) if match_features.group(6) else ''
-                else:
-                    features = None
 
+                if features != "UNKNOWN":
+                    features = features.strip()
+
+                misc = ', '.join(match_misc).strip('()') if match_misc else misc
+                
                 if not match.group(5):
-                    artist = match.group(1).strip() if match.group(1) else 'UNKNOWN'
-                    title = match.group(2).strip() if match.group(2) else 'UNKNOWN'
-                    if title == 'UNKNOWN':
-                        title_in_artist = re.search(r'(\".+?\")', artist)
-                        if title_in_artist:
-                            artist = artist.replace(title_in_artist, '')
-                            title = tile.replace('\uFF02', '')
-                            title = title.strip('"')
-                    youtube_id = match.group(3).strip('[]') if match.group(3) else 'UNKNOWN'
-                    filetype = match.group(4).strip().rstrip('.') if match.group(4) else 'mp3'
-                    features = features.strip() if features else 'UNKNOWN'
-                    misc = ', '.join(match_misc).strip('()') if match_misc else 'UNKNOWN'
+                    artist = match.group(1).strip() if match.group(1) else artist
+                    youtube_id = match.group(3).strip('[]') if match.group(3) else youtube_id
+                    filetype = match.group(4).strip().rstrip('.') if match.group(4) else filetype
                 else:
                     artist = match.group(5).strip() if match.group(5) else 'UNKNOWN'
-                    title_in_artist = re.search(r'([\uFF02\"\'].+?[\uFF02\"\'])|(:.+)', artist)
-                    if title_in_artist:
-                        if title_in_artist.group(1):
-                            artist = artist.replace(title_in_artist.group(1), '').strip()
-                            title = title_in_artist.group(1)
-                        else:
-                            artist = artist.replace(title_in_artist.group(2), '').strip()
-                            title = title_in_artist.group(2)
-                        # title = title.replace('\uFF02', '')
-                        title = title.strip('":\uFF02\'')
-                        title = title.strip()
-                    else:
-                        title = 'UNKNOWN'
+                    youtube_id = match.group(6).strip('[]') if match.group(6) else youtube_id
+                    filetype = match.group(7).strip().rstrip('.') if match.group(7) else filetype
 
-                    youtube_id = match.group(6).strip('[]') if match.group(6) else 'UNKNOWN'
-                    filetype = match.group(7).strip().rstrip('.') if match.group(7) else 'mp3'
-                    features = features.strip() if features else 'UNKNOWN'
-                    misc = ', '.join(match_misc).strip('()') if match_misc else 'UNKNOWN'
+                title = match.group(2).strip() if match.group(2) else title
+                title_in_artist = re.search(r'([\uFF02\"\'].+?[\uFF02\"\'])|(:.+)', artist)
+                if title_in_artist and title == "UNKNOWN":
+                    if title_in_artist.group(1):
+                        artist = artist.replace(title_in_artist.group(1), '').strip()
+                        title = title_in_artist.group(1)
+                    else:
+                        artist = artist.replace(title_in_artist.group(2), '').strip()
+                        title = title_in_artist.group(2)
+                    # title = title.replace('\uFF02', '')
+                    title = title.strip('":\uFF02\'')
+                    title = title.strip()
 
                 new_file = f"[{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}"
                 if _file != new_file:
                     os.rename(directory+'/'+_file, directory+'/'+new_file)
                 return new_file
-            else:
-                return f"*****{_file}"
 
 
 

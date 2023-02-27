@@ -13,6 +13,10 @@ To use MP3-PY, follow these steps:
 
 ### Dependencies
 
+External libraries:
+  - rich (pip install rich or check out [rich](https://github.com/Textualize/rich))
+
+Standard:
  - os
  - re
  - json

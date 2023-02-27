@@ -76,43 +76,62 @@ class MP3Create:
             format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
             if format_check:
                 return '$$'+_file
-            match_features = re.search(r'([fF]t\. |[wW]/)(.+?)(?=([(]|[-]|[\[]))|\([fF]eat\. (.+?)\) ', file)
+            match_features = re.search(r'([fF]t\. |[wW]\/)(.+?)(?=([\'\"\"\"]|[(]|[-]|[\[]))|\([fF]eat\. (.+?)\)|([fF]eat\. (.+?)(?=([\'\"\"\"]|[(]|[-]|[\[])))', file)
             if match_features:
                 file = file.replace(match_features[0].rstrip('-(['), '')
-            match_misc = re.findall(r'\(.+?\)', file)
+            match_misc_1 = re.findall(r'\(.+?\)', file)
+            match_misc_2 = re.findall(r'(\[.+?\]) +?', file)
+            match_misc = match_misc_1 + match_misc_2
             if match_misc:
                 for match in match_misc:
-                    file = file.replace(match, '')
-                    match_misc[match_misc.index(match)] = match.strip('()')
-            match = re.search(r'^(.+?) - (.+?) (\[.+?\])?\.(.*$)', file)
-            print(file)
+                    file = file.replace(match, '').replace('  ', ' ')
+                    match_misc[match_misc.index(match)] = match.strip('()[] ')
+            match = re.search(r'^(.+?) - (.+?) (\[\S+\])?\.(.*$)|^(.+) (\[\S+\])?\.(.*$)', file)
             if not match:
                 match = re.search(r'(.+?).([\"\uFF02\'].+?[\"\uFF02\']).(\[.+?\])?\.(.*$)', file)
             if match:
                 if match_features:
-                    features = match_features.group(2)
-                    if features and match_features.group(4):
-                        features += match_features.group(4)
-                    elif features:
-                        features = features
-                    else:
-                        features = match_features.group(2)
+                    features = ''
+                    features += match_features.group(2) if match_features.group(2) else ''
+                    features += match_features.group(4) if match_features.group(4) else ''
+                    features += match_features.group(6) if match_features.group(6) else ''
                 else:
                     features = None
 
-                artist = match.group(1).strip() if match.group(1) else 'UNKNOWN'
-                title = match.group(2).strip() if match.group(2) else 'UNKNOWN'
-                if title == 'UNKNOWN':
-                    title_in_artist = re.search(r'(\".+?\")', artist)
+                if not match.group(5):
+                    artist = match.group(1).strip() if match.group(1) else 'UNKNOWN'
+                    title = match.group(2).strip() if match.group(2) else 'UNKNOWN'
+                    if title == 'UNKNOWN':
+                        title_in_artist = re.search(r'(\".+?\")', artist)
+                        if title_in_artist:
+                            artist = artist.replace(title_in_artist, '')
+                            title = tile.replace('\uFF02', '')
+                            title = title.strip('"')
+                    youtube_id = match.group(3).strip('[]') if match.group(3) else 'UNKNOWN'
+                    filetype = match.group(4).strip().rstrip('.') if match.group(4) else 'mp3'
+                    features = features.strip() if features else 'UNKNOWN'
+                    misc = ', '.join(match_misc).strip('()') if match_misc else 'UNKNOWN'
+                else:
+                    artist = match.group(5).strip() if match.group(5) else 'UNKNOWN'
+                    title_in_artist = re.search(r'([\uFF02\"\'].+?[\uFF02\"\'])|(:.+)', artist)
                     if title_in_artist:
-                        artist = artist.replace(title_in_artist, '')
-                        title = tile.replace('\uFF02', '')
-                        title = title.strip('"')
-                youtube_id = match.group(3).strip('[]') if match.group(3) else 'UNKNOWN'
-                filetype = match.group(4).strip() if match.group(4) else '.mp3'
-                features = features.strip() if features else 'UNKNOWN'
-                misc = ', '.join(match_misc).strip('()') if match_misc else 'UNKNOWN'
-            
+                        if title_in_artist.group(1):
+                            artist = artist.replace(title_in_artist.group(1), '').strip()
+                            title = title_in_artist.group(1)
+                        else:
+                            artist = artist.replace(title_in_artist.group(2), '').strip()
+                            title = title_in_artist.group(2)
+                        # title = title.replace('\uFF02', '')
+                        title = title.strip('":\uFF02\'')
+                        title = title.strip()
+                    else:
+                        title = 'UNKNOWN'
+
+                    youtube_id = match.group(6).strip('[]') if match.group(6) else 'UNKNOWN'
+                    filetype = match.group(7).strip().rstrip('.') if match.group(7) else 'mp3'
+                    features = features.strip() if features else 'UNKNOWN'
+                    misc = ', '.join(match_misc).strip('()') if match_misc else 'UNKNOWN'
+
                 new_file = f"[{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}"
                 if _file != new_file:
                     os.rename(directory+'/'+_file, directory+'/'+new_file)

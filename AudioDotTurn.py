@@ -51,13 +51,32 @@ class Create(Settings):
         if self.args.dirs:
             self.msg = self.dirs()
         elif self.args.formatfile:
-            self.msg = Markdown(f'### **{self.format_file()}**')
+            self.msg = f'### **{self.format_file()}**'
         elif self.args.formatdir:
             self.msg = self.format_files_dir()
         elif self.args.create_command == 'json':
             if self.args.dump:
                 self.msg = (self.json_dump())
-        return self.console.print(self.msg)
+        return self.console.print(Markdown(self.msg))
+
+    def form_or_not(self, files_list: list):
+        formatted = ['\n## Formatted:']
+        not_formatted = ['\n## Not Formatted:']
+        already_formatted = ['\n## No Change:']
+        for file in files_list:
+            if file.startswith('*****'):
+                not_formatted.append(f"    - {file.lstrip('*')}")
+            elif file.startswith('$$'):
+                already_formatted.append(f"    - {file.lstrip('$$')}")
+            else:
+                formatted.append(f'    - {file}')
+        stats = [
+            f'\n### Number of files formatted: {len(formatted) - 1}',
+            f'\n### Number of files unable to be formatted: {len(not_formatted) - 1}',
+            f'\n### Number of files unchanged: {len(already_formatted) - 1}'
+        ]
+
+        return formatted, not_formatted, already_formatted, stats
 
     def dirs(self):
         directory = self.directory.rstrip('/')
@@ -93,21 +112,22 @@ class Create(Settings):
                         shutil.move(f"{self.directory}/{filename}", f"{artist_dir}/{filename}")
                     except:
                         pass
-        msg = f'### Organized {len(files)} files for {len(artists)} artists.\n' + '#### Created directories:\n' + '\n'.join(created)
-        return Markdown(msg)
+        return f'### Organized {len(files)} files for {len(artists)} artists.\n' + '#### Created directories:\n' + '\n'.join(created)
 
     def format_files_dir(self):
         directory = self.directory.rstrip('/')
         try:
-            files_list = [self.format_file(file=f, directory=directory) for f in os.listdir(directory) if os.path.isfile(directory+'/'+f)]
+            files_list = [self.format_file(file=f) for f in os.listdir(directory) if os.path.isfile(directory+'/'+f)]
             formatted, not_formatted, already_formatted, stats = self.form_or_not(files_list)
-            return Markdown('\n'.join(formatted + not_formatted + already_formatted + stats))
+            return '\n'.join(formatted + not_formatted + already_formatted + stats)
         except Exception as error:
-            return Markdown(f'{error}')
+            return f'{error}'
 
-    def format_file(self):
+    def format_file(self, file: str = None):
         # Extract information from filename
         # pattern = r'^(.+?) - (.+?)(?: \((feat\. .+?)\))? (\[.+?\])?\.mp3$'
+        if file:
+            self.filename = file
         file = self.filename
         format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
         if format_check:
@@ -135,14 +155,13 @@ class Create(Settings):
 
         else:
             if match_features:
-                features = ''
-                features += match_features.group(2) if match_features.group(2) else ''
-                features += match_features.group(4) if match_features.group(4) else ''
-                features += match_features.group(6) if match_features.group(6) else ''
+                self.features = ''
+                self.features += match_features.group(2) if match_features.group(2) else ''
+                self.features += match_features.group(4) if match_features.group(4) else ''
+                self.features += match_features.group(6) if match_features.group(6) else ''
+                features = self.features.strip()
 
-            if features != "UNKNOWN":
-                features = features.strip()
-
+            features = self.features
             misc = ', '.join(match_misc).strip('()') if match_misc else self.misc
             
             if not match.group(5):
@@ -240,7 +259,7 @@ class View(Settings):
         else:
             self.msg = self.args.view_command
 
-        self.console.print(self.msg)
+        self.console.print(Markdown(self.msg))
 
     # View - artists commands
     def get_artists(self):
@@ -249,8 +268,7 @@ class View(Settings):
         for artist in self.dataset:
             artists_list.append(f'                            - {artist}')
 
-        msg = f"# Database: {self.filename}\n\n" + "## Artists:\n" + '\n'.join(artists_list)
-        return Markdown(msg)
+        return f"# Database: {self.filename}\n\n" + "## Artists:\n" + '\n'.join(artists_list)
 
     def get_artists_tracks(self):
         # get list of all artists and their tracks in dataset
@@ -266,8 +284,7 @@ class View(Settings):
                             - File Type: {tracks["filetype"]}\n'''
                 artists_list.append(msg)
 
-        msg = f"# Database: {self.filename}\n\n" + "## Artists and their Tracks:\n" + '\n'.join(artists_list)
-        return Markdown(msg)
+        return f"# Database: {self.filename}\n\n" + "## Artists and their Tracks:\n" + '\n'.join(artists_list)
 
     # View - songs commands
     def get_songs_by_artist(self):
@@ -284,8 +301,7 @@ class View(Settings):
                                 - File Type: {track["filetype"]}\n'''
                     artists_list.append(msg)
 
-        msg = f"# Database: {self.filename}\n\n" + f"## Songs by artist matching '{self.artist}':\n" + '\n'.join(artists_list)
-        return Markdown(msg)
+        return f"# Database: {self.filename}\n\n" + f"## Songs by artist matching '{self.artist}':\n" + '\n'.join(artists_list)
 
     def get_songs_by_id(self):
         # get list of all songs by their youtube id in dataset
@@ -301,8 +317,7 @@ class View(Settings):
                                 - File Type: {track["filetype"]}\n'''
                     artists_list.append(msg)
 
-        msg = f"# Database: {self.filename}\n\n" + f"## Songs by ID {self.youtube_id}:\n" + '\n'.join(artists_list)
-        return Markdown(msg)
+        return f"# Database: {self.filename}\n\n" + f"## Songs by ID {self.youtube_id}:\n" + '\n'.join(artists_list)
 
     def get_songs_by_name(self):
     # get list of all songs by their name in dataset, will search by substring
@@ -318,8 +333,7 @@ class View(Settings):
                                 - File Type: {track["filetype"]}\n'''
                     artists_list.append(msg)
 
-        msg = f"# Database: {self.filename}\n\n" + f"## Tracks with name matching '{self.name}':\n" + "\n".join(artists_list)
-        return Markdown(msg)
+        return f"# Database: {self.filename}\n\n" + f"## Tracks with name matching '{self.name}':\n" + "\n".join(artists_list)
 
 class AudioDotTurn:
     def __init__(self, args: argparse.Namespace, parsers: tuple((argparse.ArgumentParser, ...))):
@@ -362,7 +376,7 @@ def main():
     create_parser.add_argument('-F', '--formatdir', action='store_true', help='Format all files in directory')
     create_parser.add_argument('-D', '--dump', action='store_true', help='Dump directory into JSON file')
     create_parser.add_argument('--filename', type=str, default='data.json', help='Name of JSON file')
-    create_parser.add_argument('--dry', action='store_false', help='Dry run')
+    create_parser.add_argument('--dry', action='store_true', help='Dry run')
     create_parser.add_argument('--directory', type=str, default='.', help='Directory to organize or format files')
 
     # Create parser for the "view" command

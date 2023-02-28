@@ -1,20 +1,21 @@
-# MP3-PY
+# AudioDotTurn
 
-MP3-PY is a tool designed to help organize MP3 files that have been downloaded using yt-dlp without properly formatted file names or metadata. The tool allows users to create artist directories and a JSON dataset of MP3 files to help with organizing and searching for specific songs or artists. 
+AudioDotTurn is a tool designed to help format and organize files that have been downloaded using yt-dlp without properly formatted file names or metadata.  
+The tool allows users to format titles, organize tracks into artist directories and a JSON dataset of the songs to help with organizing and searching for specific songs or artists. 
 
 
 ## Installation
 
-To use MP3-PY, follow these steps:
+To use AudioDotTurn, follow these steps:
 
-1. Clone the MP3-PY repository to your local machine.
-2. Run the program using `python mp3-py.py`.
+1. Clone the AudioDotTurn repository to your local machine.
+2. Run the program using `python AudioDotTurn.py`.
 
 
-### Dependencies
+## Dependencies
 
 External libraries:
-  - rich (pip install rich or check out [rich](https://github.com/Textualize/rich))
+ - rich (pip install rich or check out [rich](https://github.com/Textualize/rich))
 
 Standard:
  - os
@@ -22,30 +23,29 @@ Standard:
  - json
  - argparse
  - shutil
- - rich
 
 
 ## File formatting examples
 
 Default format output 
 
-        -> [{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}
+        [{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}
 
 As of right now the file really just needs to end in ' [youtubeid].filetype' and it should be able to format it to an extent.
 
-        mp3-py.py create --formatfile 'YG Feat. Dj Mustard "Pop It, Shake It" (Uncut) (WSHH Exclusive - Official Music Video) [kQ2KSPz4iSw].wav' -> 
+        AudioDotTurn.py create --formatfile 'YG Feat. Dj Mustard "Pop It, Shake It" (Uncut) (WSHH Exclusive - Official Music Video) [kQ2KSPz4iSw].wav' -> 
               [YG][Pop It, Shake It][Dj Mustard][Uncut, WSHH Exclusive - Official Music Video][kQ2KSPz4iSw].wav
               
-        mp3-py.py create --formatfile 'The Weeknd - Blinding Lights (Lyrics) [4NRXx6U8ABQ].mp3' -> 
+        AudioDotTurn.py create --formatfile 'The Weeknd - Blinding Lights (Lyrics) [4NRXx6U8ABQ].mp3' -> 
               [The Weeknd][Blinding Lights][UNKNOWN][Lyrics][4NRXx6U8ABQ].mp3
               
-        mp3-py.py create --formatfile 'Lady Gaga, Ariana Grande - Rain On Me (Official Music Video) [AOm9Fv8NTG0].mp3' -> 
+        AudioDotTurn.py create --formatfile 'Lady Gaga, Ariana Grande - Rain On Me (Official Music Video) [AOm9Fv8NTG0].mp3' -> 
               [Lady Gaga, Ariana Grande][Rain On Me][UNKNOWN][Official Music Video][AOm9Fv8NTG0].mp3
 
-        mp3-py.py create --formatfile 'Music for Sleeping and Deep Relaxation: Delta Waves [HU3ZGMaVZj0].mp4' -> 
+        AudioDotTurn.py create --formatfile 'Music for Sleeping and Deep Relaxation: Delta Waves [HU3ZGMaVZj0].mp4' -> 
               [Music for Sleeping and Deep Relaxation][Delta Waves][UNKNOWN][UNKNOWN][HU3ZGMaVZj0].mp4
 
-        mp3-py.py create --formatfile 'Music [HU3ZGMaVZj0].mp4' -> 
+        AudioDotTurn.py create --formatfile 'Music [HU3ZGMaVZj0].mp4' -> 
               [Music][UNKNOWN][UNKNOWN][UNKNOWN][HU3ZGMaVZj0].mp4
 
 If these 5 files were formatted with --dirs after filename formatting, it would create directories based off of the unique artist names- 'YG', 'The Weeknd', 'Lady Gaga, Ariana Grande', 'Music for Sleeping and Deep Relaxation' and 'Music' 
@@ -53,55 +53,119 @@ in this case - each containing the songs of the artist.
 
 It usually handles trickier filenames okay too (still needs to end in ' [youtubeid].filetype')
 
-        mp3-py.py create --formatfile 'Zacari (adasdasdasd) ft. Isaiah Rashad [misc misc] - Bliss (Official Audio) [audio] [9o1gLWxHI7Q].mp3'i ->
+        AudioDotTurn.py create --formatfile 'Zacari (adasdasdasd) ft. Isaiah Rashad [misc misc] - Bliss (Official Audio) [audio] [9o1gLWxHI7Q].mp3'i ->
               [Zacari][Bliss][Isaiah Rashad][adasdasdasd, Official Audio, misc misc, audio][9o1gLWxHI7Q].mp3 
 
-        mp3-py.py create --formatfile 'ZillaKami x SosMula ＂33rd Blakk Glass＂(WSHH Exclusive - testing) [9o1gLWxHI7Q].mp3'
+        AudioDotTurn.py create --formatfile 'ZillaKami x SosMula ＂33rd Blakk Glass＂(WSHH Exclusive - testing) [9o1gLWxHI7Q].mp3'
               [ZillaKami x SosMula][33rd Blakk Glass][UNKNOWN][WSHH Exclusive - testing][9o1gLWxHI7Q].mp3 
 
 
-## Demo
+## More Info
 
-First run on anything more than ~5 files. This is why I made the program so I wasnt really too worried about ironing out things too much. If anyone has interest though I can keep working on it. Ill probably do my 'roadmap' tasks and not much more unless other people find it useful. 
-
-https://user-images.githubusercontent.com/71906074/221419033-9617af86-928f-40ec-a9c1-9d011a2f248f.mp4
-
+Some images and more info about the program can be found at [tairenfd.xyz](https://tairenfd.xyz/projects/mp3-formatter)
 
 ## Usage
 
-The MP3-PY tool includes two main commands: `create` and `view`.
+AudioDotTurn has two main commands: `create` and `view`. 
 
+The `create` command allows you to format and/or organize your files, while the `view` command allows you to view information about your existing data.
 
-### Create Sub-Command
+### Flags and positional arguments
 
-The create sub-command has three optional arguments: --dirs, --formatfile, and --formatdir. These are used to process formatted MP3 files from a directory into artist directories and to format MP3 filenames according to a specific pattern.
-              
-                python mp3-py.py create --dirs DIRECTORY
-                python mp3-py.py create --formatfile FILENAME
-                python mp3-py.py create --formatdir DIRECTORY
+      usage: AudioDotTurn.py [-h] {create,view} ...
 
+      Format, orgranize and retrieve data from files in an audio library.
 
-### View Sub-Command
+      positional arguments:
+        {create,view}  commands
+          create       Create subcommands
+          view         View subcommands
 
-The view sub-command has three sub-commands: json, artists, and songs. The json sub-command has one optional argument: --dump, which is used to create a JSON of formatted MP3 files in a specified directory. The artists sub-command has two optional arguments: --tracks to list all artists in the dataset and their tracks, and --names to list all artists in the dataset. The songs sub-command has three optional arguments: --artist to specify the artist to display songs for, --id to search for a song by YouTube ID, and --name to search for a song by track title.
-              
-                python mp3-py.py view --data DATASET json --dump DIRECTORY (DATASET will be overwritten or created)
+      optional arguments:
+        -h, --help     show this help message and exit
 
-                python mp3-py.py view --data DATASET artists --tracks
-                python mp3-py.py view --data DATASET artists --names
-                python mp3-py.py view --data DATASET songs --artist ARTIST
-                python mp3-py.py view --data DATASET songs --id YOUTUBE_ID
-                python mp3-py.py view --data DATASET songs --name TRACK_TITLE
+      Create subcommands:
+        -d, --dirs          Organize files in artist directories
+        -f, --formatfile    Format single file
+        -F, --formatdir     Format all files in directory
+        -D, --dump          Dump directory into JSON file
+        --filename FILENAME Name of JSON file
+        --dry               Dry run
+        --directory DIR     Directory to organize or format files
 
-              
-### MP3Create class
+      View subcommands:
+        -d DATA             JSON data to view
 
-The MP3Create class has three methods: dirs(), format_file(), and format_files_dir(). The dirs() method is used to process formatted MP3 files from a directory into artist directories. The format_file() method is used to format an MP3 filename according to a specific pattern. The format_files_dir() method is used to format MP3 filenames in a specified directory according to a specific pattern.
+      View Artists:
+        artists             View list of artists
+          -t, --tracks      View list of artists and their tracks
+          -n, --names       View list of artist names
 
+      View Songs:
+        songs               View list of songs
+          -a ARTIST         View list of songs by artist
+          -i ID             View list of songs by ID
+          -N NAME           View list of songs by name
 
-### MP3View class
+### Creating a dataset
 
-The MP3View class has six methods: json_dump(), get_artists(), get_artists_tracks(), get_songs_by_artist(), get_songs_by_id(), and get_songs_by_name(). The json_dump() method is used to create a JSON of the dataset. The other methods are used to query the dataset and return the results in Markdown format.
+To create a dataset, you first need to format your filenames. There are three options for formatting filenames:
+
+1. **Format a single file:** 
+
+        `python AudioDotTurn.py create --formatfile [filename]`
+
+   This will format the filename using the default format. The default format is:
+
+        -> [{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}
+
+   If your file doesn't follow this format, the tool will attempt to format it as best it can. You can also specify a custom format using the `--format` option.
+
+2. **Format all files in a directory:**
+
+        `python AudioDotTurn.py create --formatdir [directory]`
+
+   This will format all files in the specified directory using the default format.
+
+3. **Organize files into artist directories:**
+
+        `python AudioDotTurn.py create --dirs [directory]`
+
+   This will organize all files in the specified directory into artist directories based on the artist names in the filenames.
+
+After formatting your filenames, you can create a dataset using the `--dump` option:
+
+        `python AudioDotTurn.py create --dump --filename [filename] [directory]`
+
+This will create a JSON file with information about your formatted files.
+
+### Viewing information
+
+To view information about your dataset, you can use the `view` command. There are two options for viewing information:
+
+1. **View a list of artists:**
+
+        `python AudioDotTurn.py view --data [datafile] artists --names`
+
+   This will display a list of all artists in the dataset.
+
+        `python AudioDotTurn.py view --data [datafile] artists --tracks`
+
+   This will display a list of all artists in the dataset along with their tracks.
+
+2. **View a list of songs:**
+
+        `python AudioDotTurn.py view --data [datafile] songs --artist [artist name]`
+
+   This will display a list of all songs by the specified artist.
+
+        `python AudioDotTurn.py view --data [datafile] songs --id [youtube ID]`
+
+   This will display a list of all songs with the specified youtube ID.
+
+        `python AudioDotTurn.py view --data [datafile] songs --name [track name]`
+
+   This will display a list of all songs with the specified track name.
 
 
 ### Example dataset
@@ -113,14 +177,14 @@ The MP3View class has six methods: json_dump(), get_artists(), get_artists_track
               "title": "Rapture Of Thugs",
               "features": "Polo pooh",
               "misc": "KOLYON",
-              "video_id": "xZEK6luuZ2k",
+              "youtube_id": "xZEK6luuZ2k",
               "filetype": "mp3"
             },
             {
               "title": "Walk Down",
               "features": "UNKNOWN",
               "misc": " Official Video ",
-              "video_id": "sJzTb7skSKM",
+              "youtube_id": "sJzTb7skSKM",
               "filetype": "mp3"
             }
           ]
@@ -131,14 +195,14 @@ The MP3View class has six methods: json_dump(), get_artists(), get_artists_track
               "title": "All Herb",
               "features": "Amindi",
               "misc": "UNKNOWN",
-              "video_id": "NpcsssBx2Y0",
+              "youtube_id": "NpcsssBx2Y0",
               "filetype": "mp3"
             },
             {
               "title": "The Race Freestyle",
               "features": "UNKNOWN",
               "misc": "Tay-K",
-              "video_id": "Rf4S_44jkAY",
+              "youtube_id": "Rf4S_44jkAY",
               "filetype": "mp3"
             }
           ]
@@ -147,6 +211,7 @@ The MP3View class has six methods: json_dump(), get_artists(), get_artists_track
 
 ## Roadmap
 
+ - Remove [youtube_id] dependency
  - Allow to confirm/deny filename changes
  - General regex adjusting for broader use
  - Refactoring code for better readability and maintainability

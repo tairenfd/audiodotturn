@@ -82,6 +82,7 @@ The `create` command allows you to format and/or organize your files, while the 
           view         View subcommands
 
       optional arguments:
+        --defaults     show default settings
         -h, --help     show this help message and exit
 
       Create subcommands:

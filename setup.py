@@ -7,7 +7,8 @@ setup(
     author='tairenfd',
     author_email='tairenfd@mailbox.org',
     url='https://github.com/tairenfd/AudioDotTurn',
-    packages=find_packages(),
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},package_dir={'': 'src'},
     install_requires=[
         'rich>=13.3.1'
     ],

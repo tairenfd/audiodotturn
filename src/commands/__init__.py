@@ -1,2 +1,2 @@
-from commands.create import Create
-from commands.view import View
+from src.commands.create import Create
+from src.commands.view import View

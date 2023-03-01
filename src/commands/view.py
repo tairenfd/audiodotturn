@@ -2,16 +2,20 @@ import os
 import json
 import argparse
 from rich.markdown import Markdown
-from config import Config
+from src.config import Config
 
 
 class View(Config):
     def __init__(self, args: argparse.Namespace):
         self.args = args
+        # get defaults
         super().__init__()
-        self.artist = self.args.artist
-        self.id = self.args.id
-        self.name = self.args.name
+        # set user defined args
+        if self.args.view_command == 'songs':
+            self.artist = self.args.artist if self.args.artist else ''
+            self.id = self.args.id if self.args.id else ''
+            self.name = self.args.name if self.args.name else ''
+        # attempt to open the given dataset
         try:
             with open(os.path.join(self.args.data), 'r') as f:
                 self.dataset = json.load(f, object_hook=dict)
@@ -19,6 +23,7 @@ class View(Config):
             self.dataset = {}
             self.args.view_command = f'{self.error_msg}'
 
+    # view command runner
     def run(self):
         if self.args.view_command == 'artists':
             if self.args.tracks:

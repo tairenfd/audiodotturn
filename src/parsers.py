@@ -1,6 +1,7 @@
 import argparse
-from config import Config
+from src.config import Config
 
+# Get default settings
 defaults = Config()
 
 # Create main parser
@@ -39,4 +40,5 @@ songs_parser.add_argument('-N', '--name', type=str, help='View list of songs by 
 # Parse arguments
 args = parser.parse_args()
 
+# create tuple of parsers
 parsers = (parser, create_parser, view_parser)

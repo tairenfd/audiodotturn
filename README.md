@@ -5,6 +5,8 @@ If you're tired of your audio files being a complete mess with poorly formatted 
 
 Using audiodotturn you can quickly and easily organize your entire audio library with just a few commands.
 
+The project initially began due to a dumb mistake by myself where I downloaded over 3000+ songs with yt-dlp with no proper formatting or metadata included.
+
 # Table of Contents
 
 - [Installation](#installation)

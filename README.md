@@ -92,6 +92,8 @@ AudioDotTurn has two main commands: `create` and `view`.
 
 The `create` command allows you to format and/or organize your files, while the `view` command allows you to view information about your existing data.
 
+The `set` command can also be used to set default values. It will have you confirm or deny any changes to ensure safety. Multiple values can be changed at once.
+
 ## Flags and positional arguments
 
 ```sh
@@ -100,24 +102,39 @@ The `create` command allows you to format and/or organize your files, while the 
     Format, orgranize and retrieve data from files in an audio library.
 
     positional arguments:
-      {create,view}  commands
+      {set,create,view}  commands
+        set          Set default settings
         create       Create subcommands
         view         View subcommands
 
     optional arguments:
-      --defaults                            Show default settings
-      --defaults [{settings,options,all}]   Show default settings
-      -h, --help                            Show this help message and exit
+      --defaults                                     Show default settings
+      --defaults [{program, format, options, all}]   Show default settings
+      -h, --help                                     Show this help message and exit
 
-      Create subcommands:
-        -d, --dirs                    Organize files in artist directories
-        -x. --formatter  FORMATTER    Define the formatter to use
-        -f, --formatfile FORMATFILE   Format single file
-        -F, --formatdir               Format all files in directory
-        -D, --dump                    Dump directory into JSON file
-        --filename FILENAME           Name of JSON file
-        --directory DIR               Directory to organize or format files
-        --dry                         Dry run
+    Set subcommands:
+      --artist        ARTIST 
+      --title         TITLE
+      --features      FEATURES 
+      --misc          MISC 
+      --youtube_id    YOUTUBE_ID 
+      --filetype      FILETYPE 
+      --dry           BOOL
+      --filename      FILENAME
+      --directory     PATH
+      --formatter     FORMATTER
+      --error_msg     STRING
+      --exts          STRING
+
+    Create subcommands:
+      -d, --dirs                    Organize files in artist directories
+      -x. --formatter  FORMATTER    Define the formatter to use
+      -f, --formatfile FORMATFILE   Format single file
+      -F, --formatdir               Format all files in directory
+      -D, --dump                    Dump directory into JSON file
+      --filename FILENAME           Name of JSON file
+      --directory DIR               Directory to organize or format files
+      --dry                         Dry run
 
     View subcommands:
       -d DATA             JSON data to view

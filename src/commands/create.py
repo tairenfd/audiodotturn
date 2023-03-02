@@ -3,6 +3,7 @@ import re
 import json
 import shutil
 import argparse
+from rich.tree import Tree
 from rich.json import JSON
 from rich.markdown import Markdown
 from src.config import Config
@@ -30,12 +31,14 @@ class Create(Config):
             elif self.args.formatdir:
                 self.msg = self.format_files_dir()
             elif self.args.dump:
+                tree = Tree('DUMP')
                 dump = self.json_dump()
                 if type(dump) is tuple:
-                    self.console.log(JSON(dump[0]))
-                    self.console.log(JSON(dump[1]))
-                    return
-                return self.console.log(JSON(dump))
+                    tree.add("[green]Runtime Info").add(JSON(dump[0]), highlight=True)
+                    tree.add("[cyan]Data").add(JSON(dump[1]), highlight=True)
+                else:
+                    tree.add("[red]Runtime Info").add(JSON(dump), highlight=True)
+                return self.console.log(tree)
 
             return self.console.log(Markdown(self.msg))
 
@@ -138,12 +141,14 @@ class Create(Config):
         return new_file
 
     def json_dump(self) -> str | tuple[str, str]:
+
         # check if valid directory
         if not os.path.isdir(self.directory):
             return json.dumps(
                 {
                     "Result": {
                         "Dry run": f"{self.dry}",
+                        "Status": "FAILED",
                         "Final": f"Data has FAILED to be dumped into {self.filename}.",
                         "Reason": f"Directory path '{self.directory}' not found.",
                     }
@@ -199,6 +204,7 @@ class Create(Config):
                 {
                     "Result": {
                         "Dry run": f"{self.dry}",
+                        "Status": "FAILED",
                         "Final": f"Data has FAILED to be dumped into {self.filename}.",
                         "Reason": "No data available. Most likely cause is having no formatted files available in directory.",
                     }
@@ -214,6 +220,7 @@ class Create(Config):
                 {
                     "Result": {
                         "Dry run": f"{self.dry}",
+                        "Status": "SUCCESS",
                         "Final": f"Data has been dumped into '{self.filename}'.",
                     }
                 }
@@ -224,6 +231,7 @@ class Create(Config):
             {
                 "Result": {
                     "Dry run": f"{self.dry}",
+                    "Status": "SUCCESS",
                     "Final": f"Data would have been dumped into '{self.filename}'.",
                 }
             }

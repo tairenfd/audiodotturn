@@ -16,6 +16,7 @@ Using audiodotturn you can quickly and easily organize your entire audio library
 - [Examples](#examples)
   - [File formatting examples](#file-formatting-examples)
   - [Example dataset](#example-dataset)
+- [Disclaimer](#disclaimer)
 - [Roadmap](#roadmap)
 - [License](#license)
 

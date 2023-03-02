@@ -1,12 +1,26 @@
 import os
 from setuptools import setup, find_packages
+import codecs
+import os.path
+
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 APP_NAME = 'audiodotturn'
-VERSION = __version__ = '0.2.1'
 
 setup(
     name=APP_NAME,
-    version=VERSION,
+    version=get_version("src/__init__.py"),
     description='A tool for formatting and organizing music files.',
     author='tairenfd',
     author_email='tairenfd@mailbox.org',

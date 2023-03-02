@@ -1,8 +1,8 @@
 # AudioDotTurn
 
-AudioDotTurn is a tool designed to help format and organize files that have been downloaded using yt-dlp without properly formatted file names or metadata.  
-The tool allows users to format titles, organize tracks into artist directories and a JSON dataset of the songs to help with organizing and searching for specific songs or artists. 
+If you're tired of your audio files being a complete mess with poorly formatted names and missing metadata this might be your solution.  
 
+Using audiodotturn you can quickly and easily organize your entire audio library with just a few commands.
 
 ## Table of Contents
 
@@ -10,6 +10,7 @@ The tool allows users to format titles, organize tracks into artist directories 
 - [Dependencies](#dependencies)
 - [Usage](#usage)
   - [Flags and positional arguments](#flags-and-positional-arguments)
+  - [Choosing a formatter](#choosing-a-formatter)
   - [Creating a dataset](#creating-a-dataset)
   - [Viewing information](#viewing-information)
 - [Examples](#examples)
@@ -68,17 +69,19 @@ The `create` command allows you to format and/or organize your files, while the 
         view         View subcommands
 
     optional arguments:
-      --defaults     show default settings
-      -h, --help     show this help message and exit
+      --defaults                            Show default settings
+      --defaults [{settings,options,all}]   Show default settings
+      -h, --help                            Show this help message and exit
 
       Create subcommands:
-        -d, --dirs          Organize files in artist directories
-        -f, --formatfile    Format single file
-        -F, --formatdir     Format all files in directory
-        -D, --dump          Dump directory into JSON file
-        --filename FILENAME Name of JSON file
-        --dry               Dry run
-        --directory DIR     Directory to organize or format files
+        -d, --dirs                    Organize files in artist directories
+        -x. --formatter  FORMATTER    Define the formatter to use
+        -f, --formatfile FORMATFILE   Format single file
+        -F, --formatdir               Format all files in directory
+        -D, --dump                    Dump directory into JSON file
+        --filename FILENAME           Name of JSON file
+        --directory DIR               Directory to organize or format files
+        --dry                         Dry run
 
     View subcommands:
       -d DATA             JSON data to view
@@ -95,6 +98,18 @@ The `create` command allows you to format and/or organize your files, while the 
           -N NAME           View list of songs by name
 ```
 
+### Choosing a formatter
+
+The default formatter is now the 'standard' formatter which applies no youtube_id data attribute but otherwise works the same. It will still read formatted files with a youtube_id fine when creating a json, but will not create new datasets with youtube_id's - instead putting that info if provided into the 'misc' category. This is the recommended formatter for general use.
+
+The 'youtube' formatter is primarily for files downloaded with yt-dlp that still contain a suffix of [youtube_id].ext
+
+You can set a default formatter in the config.json file, or set it during runtime with `-x [formatter]`
+
+To view the currently set default formatter use `audiodotturn --default settings` - default formatter listed under `program_defaults -> formatter`  
+
+You can view the available formatters with `audiodotturn --defaults options` - options will be under `formatter`
+
 ### Creating a dataset
 
 To create a dataset, you first need to format your filenames. There are three options for formatting filenames:
@@ -102,7 +117,7 @@ To create a dataset, you first need to format your filenames. There are three op
 1. **Format a single file:** 
 
 ```sh
-      python AudioDotTurn.py create --formatfile [filename]
+      audiodotturn create --formatfile [filename]
 ```
 
    This will format the filename using the default format.
@@ -112,7 +127,7 @@ To create a dataset, you first need to format your filenames. There are three op
 2. **Format all files in a directory:**
 
 ```sh
-      python AudioDotTurn.py create --formatdir [directory]
+      audiodotturn create --formatdir [directory]
 ```
 
    This will format all files in the specified directory using the default format.
@@ -120,7 +135,7 @@ To create a dataset, you first need to format your filenames. There are three op
 3. **Organize files into artist directories:**
 
 ```sh
-      python AudioDotTurn.py create --dirs [directory]
+      audiodotturn create --dirs [directory]
 ```
 
    This will organize all files in the specified directory into artist directories based on the artist names in the filenames.
@@ -128,7 +143,7 @@ To create a dataset, you first need to format your filenames. There are three op
 After formatting your filenames, you can create a dataset using the `--dump` option:
 
 ```sh
-      python AudioDotTurn.py create --dump --filename [filename] [directory]
+      audiodotturn create --dump --filename [filename] [directory]
 ```
 
 This will create a JSON file with information about your formatted files.
@@ -140,13 +155,13 @@ To view information about your dataset, you can use the `view` command. There ar
 1. **View a list of artists:**
 
 ```sh
-      python AudioDotTurn.py view --data [datafile] artists --names
+      audiodotturn view --data [datafile] artists --names
 ```
 
    This will display a list of all artists in the dataset.
 
 ```sh
-      python AudioDotTurn.py view --data [datafile] artists --tracks
+      audiodotturn view --data [datafile] artists --tracks
 ```
 
    This will display a list of all artists in the dataset along with their tracks.
@@ -154,19 +169,19 @@ To view information about your dataset, you can use the `view` command. There ar
 2. **View a list of songs:**
 
 ```sh
-      python AudioDotTurn.py view --data [datafile] songs --artist [artist name]
+      audiodotturn view --data [datafile] songs --artist [artist name]
 ```
 
    This will display a list of all songs by the specified artist.
 
 ```sh
-      python AudioDotTurn.py view --data [datafile] songs --id [youtube ID]
+      audiodotturn view --data [datafile] songs --id [youtube ID]
 ```
 
    This will display a list of all songs with the specified youtube ID.
 
 ```sh
-      python AudioDotTurn.py view --data [datafile] songs --name [track name]
+      audiodotturn view --data [datafile] songs --name [track name]
 ```
 
    This will display a list of all songs with the specified track name.
@@ -176,11 +191,7 @@ To view information about your dataset, you can use the `view` command. There ar
 
 ### File formatting examples
 
-Default format output 
-
-- [{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}
-
-As of right now the file really just needs to end in ' [youtubeid].filetype' and it should be able to format it to an extent.
+* Note: The below are only examples using the 'youtube' formatter. More examples will be added soon.
 
 - `[YG Feat. Dj Mustard "Pop It, Shake It" (Uncut) (WSHH Exclusive - Official Music Video) [kQ2KSPz4iSw].wav]` formats as `[YG][Pop It, Shake It][Dj Mustard][Uncut, WSHH Exclusive - Official Music Video][kQ2KSPz4iSw].wav`
 - `[The Weeknd - Blinding Lights (Lyrics) [4NRXx6U8ABQ].mp3]` formats as `[The Weeknd][Blinding Lights][UNKNOWN][Lyrics][4NRXx6U8ABQ].mp3`
@@ -213,7 +224,6 @@ As of right now the file really just needs to end in ' [youtubeid].filetype' and
           "title": "All Herb",
           "features": "Amindi",
           "misc": "UNKNOWN",
-          "youtube_id": "NpcsssBx2Y0",
           "filetype": "mp3"
         },
         {
@@ -227,6 +237,10 @@ As of right now the file really just needs to end in ' [youtubeid].filetype' and
     }
   }
 ```
+
+## Disclaimer
+
+AudioDotTurn is currently in alpha testing and is provided as is with no warranties or guarantees of any kind. The author of the program is not responsible for any damages or issues caused by the use of this program. Use at your own risk.
 
 
 ## Roadmap

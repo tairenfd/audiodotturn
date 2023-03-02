@@ -1,6 +1,8 @@
 import argparse
 from src.parsers import parsers, args, defaults
 from src.commands import Create, View
+from src import VERSION
+from rich.markdown import Markdown
 
 # CLI runner
 class CLI:
@@ -11,9 +13,20 @@ class CLI:
         self.create_parser = parsers[1]
         self.view_parser = parsers[2]
 
+        if self.args.version:
+            defaults.console.print(Markdown(f'# {VERSION}'))
+            exit(1)
+            
+
         # display defaults (--defaults)
         if self.args.defaults:
-            defaults.display()
+            display = self.args.defaults
+            if display == 'settings':
+                defaults.display_settings()
+            elif display == 'options':
+                defaults.display_options()
+            else:
+                defaults.display_all()
             exit(1)
 
         # create - positional arg
@@ -22,7 +35,7 @@ class CLI:
             creator = Create(self.args)
 
             # If no args send help text
-            if not any((self.args.dirs, self.args.formatfile, self.args.formatdir)):
+            if not any((self.args.dirs, self.args.formatfile, self.args.formatdir, self.args.dump)):
                 self.create_parser.print_help()
                 exit(1)
             

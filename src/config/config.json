@@ -1,16 +1,42 @@
 {
-    "formatting_defaults": {
-        "artist": "UNKNOWN",
-        "title": "UNKNOWN",
-        "features": "UNKNOWN",
-        "misc": "UNKNOWN",
-        "youtube_id": "UNKNOWN",
-        "filetype": "mp3"
+    "settings": {
+        "formatting_defaults": {
+            "artist": "UNKNOWN",
+            "title": "UNKNOWN",
+            "features": "UNKNOWN",
+            "misc": "UNKNOWN",
+            "youtube_id": "UNKNOWN",
+            "filetype": "mp3"
+        },
+        "program_defaults": {
+            "dry": "False",
+            "error_msg": "Error: {error}",
+            "filename": "data.json",
+            "formatter": "standard",
+            "directory": ".",
+            "exts": ".mp3, .mp4, .wav, .m4a, .wma, .aac, .fla, .webm, .ogg, .opus, .flv"
+        }
     },
-    "program_defaults": {
-        "dry": "False",
-        "error_msg": "Error: {error}",
-        "filename": "data.json",
-        "directory": "."
+    "options": {
+        "formatting_defaults": {
+            "all": "Can generally be set to whatever you'd like. These are the default attributes set when formatting the filename if no info is found"
+        },
+        "program_defaults": {
+            "dry": "True/False",
+            "error_msg": "Any string you'd like to show as an error message variables can be set within {} such as {error}",
+            "filename": "Any filename ending in .json, this will be the default json filename set during dataset creations",
+            "formatter": {
+                "standard": [
+                    "standard",
+                    "default"
+                ],
+                "youtube": [
+                    "youtube",
+                    "yt"
+                ]
+            },
+            "directory": ".",
+            "exts": ".mp3, .mp4, .wav, .m4a, .wma, .aac, .fla, .webm, .ogg, .opus, .flv"            
+        }
     }
 }

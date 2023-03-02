@@ -1,10 +1,11 @@
-# AudioDotTurn
+AudioDotTurn
+============
 
 If you're tired of your audio files being a complete mess with poorly formatted names and missing metadata this might be your solution.  
 
 Using audiodotturn you can quickly and easily organize your entire audio library with just a few commands.
 
-## Table of Contents
+# Table of Contents
 
 - [Installation](#installation)
 - [Dependencies](#dependencies)
@@ -21,7 +22,7 @@ Using audiodotturn you can quickly and easily organize your entire audio library
 - [License](#license)
 
 
-## Installation
+# Installation
 
 ```sh
   pip install git+https://github.com/tairenfd/audiodotturn.git
@@ -31,14 +32,48 @@ or
   git clone https:github.com/tairenfd/audiodotturn.git
   pip install ./ 
 ```  
-or run without installing with 
+or build from current release source
+1. Download the tar.gz package from the project's GitHub release page or wherever it is hosted.
+
+2. Extract the contents of the package to a directory of your choice using the following command:
+
 ```sh
-  python audiodotturn
+   tar -xvzf audiodotturn-v0.2.5.tar.gz
 ```
-after cloning the repo
+
+3. Change into the extracted directory:
+
+```sh
+   cd audiodotturn-v0.2.5
+```
+
+4. Install the dependencies by running the following command:
+
+```sh
+   pip install -r requirements.txt
+```
+   Note: If you're using a virtual environment, make sure it's activated before running this command.
+
+5. Install AudioDotTurn by running the following command:
+
+```sh
+   pip install ./
+```
 
 
-## Dependencies
+## Finally
+
+Verify that AudioDotTurn is installed correctly by running the following command:
+
+```sh
+   audiodotturn --version
+```
+   This should print the version number of AudioDotTurn.
+
+That's it! You should now be able to use AudioDotTurn by running the `audiodotturn` command in your terminal.
+
+
+# Dependencies
 
 External libraries:
  - [rich](https://github.com/Textualize/rich)
@@ -51,13 +86,13 @@ Standard:
  - shutil
 
 
-## Usage
+# Usage
 
 AudioDotTurn has two main commands: `create` and `view`. 
 
 The `create` command allows you to format and/or organize your files, while the `view` command allows you to view information about your existing data.
 
-### Flags and positional arguments
+## Flags and positional arguments
 
 ```sh
     usage: AudioDotTurn.py [-h] {create,view} ...
@@ -99,7 +134,7 @@ The `create` command allows you to format and/or organize your files, while the 
           -N NAME           View list of songs by name
 ```
 
-### Choosing a formatter
+## Choosing a formatter
 
 The default formatter is now the 'standard' formatter which applies no youtube_id data attribute but otherwise works the same. It will still read formatted files with a youtube_id fine when creating a json, but will not create new datasets with youtube_id's - instead putting that info if provided into the 'misc' category. This is the recommended formatter for general use.
 
@@ -111,7 +146,7 @@ To view the currently set default formatter use `audiodotturn --default settings
 
 You can view the available formatters with `audiodotturn --defaults options` - options will be under `formatter`
 
-### Creating a dataset
+## Creating a dataset
 
 To create a dataset, you first need to format your filenames. There are three options for formatting filenames:
 
@@ -149,7 +184,7 @@ After formatting your filenames, you can create a dataset using the `--dump` opt
 
 This will create a JSON file with information about your formatted files.
 
-### Viewing information
+## Viewing information
 
 To view information about your dataset, you can use the `view` command. There are two options for viewing information:
 
@@ -188,9 +223,9 @@ To view information about your dataset, you can use the `view` command. There ar
    This will display a list of all songs with the specified track name.
 
 
-## Examples
+# Examples
 
-### File formatting examples
+## File formatting examples
 
 * Note: The below are only examples using the 'youtube' formatter. More examples will be added soon.
 
@@ -204,7 +239,7 @@ To view information about your dataset, you can use the `view` command. There ar
 
 - `ZillaKami x SosMula ＂33rd Blakk Glass＂(WSHH Exclusive - testing) [9o1gLWxHI7Q].mp3` formats as `[ZillaKami x SosMula][33rd Blakk Glass][UNKNOWN][WSHH Exclusive - testing][9o1gLWxHI7Q].mp3`
 
-### Example dataset
+## Example dataset
 
 ```json
   {
@@ -239,12 +274,12 @@ To view information about your dataset, you can use the `view` command. There ar
   }
 ```
 
-## Disclaimer
+# Disclaimer
 
 AudioDotTurn is currently in alpha testing and is provided as is with no warranties or guarantees of any kind. The author of the program is not responsible for any damages or issues caused by the use of this program. Use at your own risk.
 
 
-## Roadmap
+# Roadmap
 
  - Remove [youtube_id] dependency
  - Allow to confirm/deny filename changes
@@ -253,7 +288,7 @@ AudioDotTurn is currently in alpha testing and is provided as is with no warrant
  - Bug fixes and optimization
 
 
-## License
+# License
 
 ![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 

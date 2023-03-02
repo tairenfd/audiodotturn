@@ -23,23 +23,27 @@ for path in ADT_CONFIG_PATH:
 if config_path is None:
     config_path = pkg_resources.resource_filename(__name__, 'config.json')
 
-artist, title, features, misc, youtube_id, filetype, dry, filename, directory, error_msg = None, None, None, None, None, None, None, None, None, None
+artist, title, features, misc, youtube_id, filetype, dry, filename, directory, formatter, error_msg, exts = None, None, None, None, None, None, None, None, None, None, None, None
 
 # read data from json and set defaults
 with open(config_path, 'r') as c:
     config = json.load(c)
+    options = config["options"]
+    settings = config["settings"]
 
-    artist = config["formatting_defaults"]["artist"]
-    title = config["formatting_defaults"]["title"]
-    features = config["formatting_defaults"]["features"]
-    misc = config["formatting_defaults"]["misc"]
-    youtube_id = config["formatting_defaults"]["youtube_id"]
-    filetype = config["formatting_defaults"]["filetype"]
+    artist = settings["formatting_defaults"]["artist"]
+    title = settings["formatting_defaults"]["title"]
+    features = settings["formatting_defaults"]["features"]
+    misc = settings["formatting_defaults"]["misc"]
+    youtube_id = settings["formatting_defaults"]["youtube_id"]
+    filetype = settings["formatting_defaults"]["filetype"]
 
-    dry = config["program_defaults"]["dry"]
-    filename = config["program_defaults"]["filename"]
-    directory = config["program_defaults"]["directory"]
-    error_msg = config["program_defaults"]["error_msg"]
+    dry = settings["program_defaults"]["dry"]
+    filename = settings["program_defaults"]["filename"]
+    directory = settings["program_defaults"]["directory"]
+    formatter = settings["program_defaults"]["formatter"]
+    error_msg = settings["program_defaults"]["error_msg"]
+    exts = tuple(settings["program_defaults"]["exts"].split(', '))
 
 
 
@@ -48,10 +52,12 @@ class Config:
     def __init__(cls):
         cls.console = Console()
         cls.directory = directory
+        cls.formatter = formatter
         cls.dry = dry
         cls.filename = filename
         cls.msg = ''
         cls.error_msg = error_msg
+        cls.exts = exts
 
         cls.artist = artist
         cls.title = title
@@ -61,7 +67,15 @@ class Config:
         cls.filetype = filetype
 
         cls.defaults = config
+        cls.settings = settings
+        cls.options = options
 
     # display defaults to user
-    def display(cls):
+    def display_all(cls):
         return cls.console.print_json(data=cls.defaults)
+
+    def display_settings(cls):
+        return cls.console.print_json(data=cls.settings)
+
+    def display_options(cls):
+        return cls.console.print_json(data=cls.options)

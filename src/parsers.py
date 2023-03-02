@@ -6,7 +6,8 @@ defaults = Config()
 
 # Create main parser
 parser = argparse.ArgumentParser(description='Format, orgranize and retrieve data from files in an audio library.')
-parser.add_argument('--defaults', action='store_true', help='Show default settings')
+parser.add_argument('--defaults', nargs='?', choices = ['settings', 'options', 'all'], help='Show default settings')
+parser.add_argument('-v', '--version', action='store_true', help='Show default settings')
 
 # Create subparsers
 subparsers = parser.add_subparsers(dest='command')
@@ -15,6 +16,7 @@ subparsers = parser.add_subparsers(dest='command')
 create_parser = subparsers.add_parser('create', help='Create subcommands')
 create_parser.add_argument('-d', '--dirs', action='store_true', help='Organize files in artist directories')
 create_parser.add_argument('-f', '--formatfile', type=str, help='Format single file')
+create_parser.add_argument('-x', '--formatter', type=str, default=defaults.formatter, help='Define the formatter to use.')
 create_parser.add_argument('-F', '--formatdir', action='store_true', help='Format all files in directory')
 create_parser.add_argument('-D', '--dump', action='store_true', help='Dump directory into JSON file')
 create_parser.add_argument('--filename', type=str, default=defaults.filename, help='Name of JSON file')

@@ -1,8 +1,10 @@
 import os
+from time import sleep
 import re
 import json
 import shutil
 import argparse
+from rich.json import JSON
 from rich.markdown import Markdown
 from src.config import Config
 
@@ -16,34 +18,28 @@ class Create(Config):
         self.dry = args.dry
         self.filename = self.args.filename
         self.directory = self.args.directory
-        # available file formats to look for
-        self.exts = (
-            '.mp3',
-            '.mp4',
-            '.wav',
-            '.m4a',
-            '.wma',
-            '.aac',
-            '.flac',
-            '.webm',
-            '.ogg',
-            '.opus',
-            '.flv'
-        )
+        self.formatter = self.args.formatter.lower().strip()
 
     # create runner
     def run(self):
-        if self.args.dirs:
-            self.msg = self.dirs()
-        elif self.args.formatfile:
-            self.filename = self.args.formatfile
-            self.msg = f'### **{self.format_file()}**'
-        elif self.args.formatdir:
-            self.msg = self.format_files_dir()
-        elif self.args.create_command == 'json':
-            if self.args.dump:
-                self.msg = (self.json_dump())
-        return self.console.print(Markdown(self.msg))
+        with self.console.status("[bold green]Working...") as status:
+            if self.args.dirs:
+                self.msg = self.dirs()
+            elif self.args.formatfile:
+                self.filename = self.args.formatfile
+                self.msg = f'### **{self.format_file()}**'
+            elif self.args.formatdir:
+                self.msg = self.format_files_dir()
+            elif self.args.dump:
+                dump = self.json_dump()
+                if type(dump) is tuple:
+                    self.console.log(JSON(dump[0]))
+                    self.console.log(JSON(dump[1]))
+                    return
+                else:
+                    return self.console.log(JSON(dump))
+
+            return self.console.log(Markdown(self.msg))
 
     # check whether a file is formatted, unable to be formatted, or 
     # unchanged due to already being formatted or an incompatible extension
@@ -75,6 +71,8 @@ class Create(Config):
         for filename in os.listdir(self.directory):
             if filename.endswith(self.exts):
                 match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", filename)
+                if not match:
+                    match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", filename)    
                 if match:
                     self.artist = match.group(1)
                 files.add(self.artist)
@@ -112,19 +110,130 @@ class Create(Config):
             self.filename = file
         file = self.filename
 
+        if self.formatter in ['youtube', 'yt']:
+            new_file = self.youtube_formatter(self.filename)
+        elif self.formatter in ['standard', 'default']:
+            new_file = self.standard_formatter(self.filename)
+
+        # if not a dry-run, set the new file name
+        if self.filename != new_file and not self.dry:
+            os.rename(self.directory+'/'+self.filename, self.directory+'/'+new_file)
+
+        return new_file
+
+    def json_dump(self):
+        # check if valid directory
+        if not os.path.isdir(self.directory):
+            return json.dumps(
+                    {
+                        "Result": {
+                            "Dry run": f"{self.dry}",
+                            "Final": f"Data has FAILED to be dumped into {self.filename}.",
+                            "Reason": f"Directory path '{self.directory}' not found."
+                        }
+                    }
+                )
+
+        # init empty dataset
+        data = {}
+        for root, _, files in os.walk(self.directory):
+            for file in files:
+                # Parse filename using regular expressions, if formatted then grab info to add to dataset
+                match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
+                if match:
+                    artist, title, features, misc, youtube_id, filetype = match.groups()
+                else:
+                    match_alt = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)                    
+                if match_alt:
+                    artist, title, features, misc, filetype = match_alt.groups()
+                    youtube_id = None
+
+                if match or match_alt:
+
+                    # Add track data to nested dictionary
+                    if artist not in data:
+                        data[artist] = {"tracks": []}
+
+                    if youtube_id:
+                        data[artist]["tracks"].append({
+                            "title": title,
+                            "features": features,
+                            "misc": misc,
+                            "youtube_id": youtube_id,
+                            "filetype": filetype
+                        })
+
+                    else:
+                        data[artist]["tracks"].append({
+                            "title": title,
+                            "features": features,
+                            "misc": misc,
+                            "filetype": filetype
+                        })
+
+        if data is None:
+            return json.dumps(
+                    {
+                        "Result": {
+                            "Dry run": f"{self.dry}",
+                            "Final": f"Data has FAILED to be dumped into {self.filename}.",
+                            "Reason": f"No data available. Most likely cause is having no formatted files available in directory."
+                        }
+                    }
+                )
+       
+        # if not a dry run then create the json dump in the given location
+        # otherwise just print it 
+        if not self.dry:
+            with open(os.path.join(self.filename), 'w') as f:
+                json.dump(data, f, indent=2)
+            return json.dumps(
+                    {
+                        "Result": {
+                            "Dry run": f"{self.dry}",
+                            "Final": f"Data has been dumped into '{self.filename}'.",
+                        }
+                    }
+                )
+        else:
+            # return json.dumps(data, indent=2)
+            return json.dumps({
+                "Result": {
+                    "Dry run": f"{self.dry}",
+                    "Final": f"Data would have been dumped into '{self.filename}'."
+                }
+            }), json.dumps(data)
+
+# FORMATTERS
+
+    def youtube_formatter(self, file):
         # check if already formatted or if not an audio file, if so add $$ to temp name
         format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
-        if format_check or not self.filename.endswith(self.exts):
-            return '$$'+self.filename
+        if format_check or not file.endswith(self.exts):
+            return '$$'+file
 
         # check for track features
-        match_features = re.search(r'([fF]t\. |[wW]\/)(.+?)(?=([\'\"\"\"]|[(]|[-]|[\[]))|\([fF]eat\. (.+?)\)|([fF]eat\. (.+?)(?=([\'\"\"\"]|[(]|[-]|[\[])))', file)
-        if match_features:
-            file = file.replace(match_features[0].rstrip('-(['), '')
+        features_1 = re.search(r'\([fF]t[\. | ](.+?)\)', file)
+        if features_1:
+            file = file.replace(features_1[0], '')
+
+        features_2 = re.search(r'([fF]t[\. | ]|[wW]\/)(.+?)(?=([\'\"\.]|[()]|[-]|[\[]))', file)
+        if features_2:
+            file = file.replace(features_2[0].rstrip('-[('), '')
+
+        features_3 = re.search(r'\([fF]eat[\. | ](.+?)\)', file)
+        if features_3:
+            file = file.replace(features_3[0], '')
+
+        features_4 = re.search(r'([fF]eat[\. | ](.+?)(?=([\'\"\.]|[()]|[-]|[\[])))', file)
+        if features_4:
+            file = file.replace(features_4[0].rstrip('-['), '')
+
+        features = [features_1, features_2, features_3, features_4]
 
         # check for misc info
         match_misc_1 = re.findall(r'\(.+?\)', file)
-        match_misc_2 = re.findall(r'(\[.+?\]) +?', file)
+        match_misc_2 = re.findall(r'(\[.+?\](?!\.))[ +?]', file)
         match_misc = match_misc_1 + match_misc_2
 
         if match_misc:
@@ -134,22 +243,22 @@ class Create(Config):
 
         # check for rest of values, first for a artist-title combo and then just for artist
         match = re.search(r'^(.+?)-(.+?) (\[\S+\])?\.(.*$)|^(.+) (\[\S+\])?\.(.*$)', file)
-        if not match:
-            match = re.search(r'(.+?).([\"\uFF02\'].+?[\"\uFF02\']).(\[.+?\])?\.(.*$)', file)
 
         # at this point if file cant be formatted, add ***** to temp name and move on
         if not match:
-            return f"*****{self.filename}"
+            file = self.filename
+            return f"*****{file}"
 
         # if file is formattable, check for existing data and fill it in. Use defaults set in config
         # for cases where no info is available.
         else:
-            if match_features:
-                self.features = ''
-                self.features += match_features.group(2) if match_features.group(2) else ''
-                self.features += match_features.group(4) if match_features.group(4) else ''
-                self.features += match_features.group(6) if match_features.group(6) else ''
-                features = self.features.strip()
+            if any(features):
+                self.features = []
+                self.features.append(features_1.group(1).strip()) if features_1 else None
+                self.features.append(features_2.group(2).strip()) if features_2 else None
+                self.features.append(features_3.group(1).strip()) if features_3 else None
+                self.features.append(features_4.group(2).strip()) if features_4 else None
+                self.features = ', '.join(self.features).replace("'", "")
 
             features = self.features
             misc = ', '.join(match_misc).strip('()') if match_misc else self.misc
@@ -177,48 +286,88 @@ class Create(Config):
                 title = title.strip()
 
             # create formatted file name
-            new_file = f"[{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}"
+            return f"[{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}"
+    
 
-            # if not a dry-run, set the new file name
-            if self.filename != new_file and not self.dry:
-                os.rename(self.directory+'/'+self.filename, self.directory+'/'+new_file)
+    def standard_formatter(self, file):
+        # check if already formatted or if not an audio file, if so add $$ to temp name
+        format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
+        format_check_extra = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
+        if format_check or format_check_extra or not file.endswith(self.exts):
+            return '$$'+file
 
-            return new_file
+        # check for track features
 
-    def json_dump(self):
-        # check if valid directory
-        if not os.path.isdir(self.directory):
-            return Markdown('### **Directory path not found.**')
+        features_1 = re.search(r'\([fF]t[\. | ](.+?)\)', file)
+        if features_1:
+            file = file.replace(features_1[0], '')
 
-        # init empty dataset
-        data = {}
-        for root, _, files in os.walk(self.directory):
-            for file in files:
-                # Parse filename using regular expressions, if formatted then grab info to add to dataset
-                match = re.match(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
-                if match:
-                    artist, title, features, misc, youtube_id, filetype = match.groups()
-                else:
-                    continue
+        features_2 = re.search(r'([fF]t[\. | ]|[wW]\/)(.+?)(?=([\'\"\.]|[()]|[-]|[\[]))', file)
+        if features_2:
+            file = file.replace(features_2[0].rstrip('-[('), '')
 
-                # Add track data to nested dictionary
-                if artist not in data:
-                    data[artist] = {"tracks": []}
+        features_3 = re.search(r'\([fF]eat[\. | ](.+?)\)', file)
+        if features_3:
+            file = file.replace(features_3[0], '')
 
-                data[artist]["tracks"].append({
-                    "title": title,
-                    "features": features,
-                    "misc": misc,
-                    "youtube_id": youtube_id,
-                    "filetype": filetype
-                })
+        features_4 = re.search(r'([fF]eat[\. | ](.+?)(?=([\'\"\.]|[()]|[-]|[\[])))', file)
+        if features_4:
+            file = file.replace(features_4[0].rstrip('-['), '')
 
-        # if not a dry run then create the json dump in the given location
-        # otherwise just print it 
-        if not self.dry:
-            with open(os.path.join(self.filename), 'w') as f:
-                json.dump(data, f, indent=2)
-            return Markdown(f"### **Data has been dumped into {self.filename}.**")        
+        features = [features_1, features_2, features_3, features_4]
 
+        # check for misc info
+        match_misc_search = re.findall(r'(\(.+?\))|(\[.+?\])', file)
+        match_misc = []
+
+        if match_misc_search:
+            for match in match_misc_search:
+                match = match[0] if match[0] else match[1]
+                file = file.replace(match, '').replace('  ', ' ')
+                match_misc.append(match.strip('()[] '))
+
+        # check for rest of values, first for a artist-title combo and then just for artist
+        match = re.search(r'^(.+?)-(.+?)\.(.*$)|^(.+)\.(.*$)', file)
+
+        # at this point if file cant be formatted, add ***** to temp name and move on
+        if not match:
+            file = self.filename
+            return f"*****{file}"
+
+        # if file is formattable, check for existing data and fill it in. Use defaults set in config
+        # for cases where no info is available.
         else:
-            return Markdown(data)
+            if any(features):
+                self.features = []
+                self.features.append(features_1.group(1).strip()) if features_1 else None
+                self.features.append(features_2.group(2).strip()) if features_2 else None
+                self.features.append(features_3.group(1).strip()) if features_3 else None
+                self.features.append(features_4.group(2).strip()) if features_4 else None
+                self.features = ', '.join(self.features).replace("'", "")
+
+            features = self.features
+
+            misc = ', '.join(match_misc).strip('()') if match_misc else self.misc
+            
+            if not match.group(5):
+                artist = match.group(1).strip() if match.group(1) else self.artist
+                filetype = match.group(3).strip().rstrip('.') if match.group(3) else self.filetype
+            else:
+                artist = match.group(4).strip() if match.group(4) else self.artist
+                filetype = match.group(5).strip().rstrip('.') if match.group(5) else self.filetype
+
+            # if there is no title, double check the artist name to see if its possibly located there
+            title = match.group(2).strip() if match.group(2) else self.title
+            title_in_artist = re.search(r'([\uFF02\"\'].+?[\uFF02\"\'])|(:.+)', artist)
+            if title_in_artist and title == "UNKNOWN":
+                if title_in_artist.group(1):
+                    artist = artist.replace(title_in_artist.group(1), '').strip()
+                    title = title_in_artist.group(1)
+                else:
+                    artist = artist.replace(title_in_artist.group(2), '').strip()
+                    title = title_in_artist.group(2)
+                title = title.strip('":\uFF02\'')
+                title = title.strip()
+
+            # create formatted file name
+            return f"[{artist}][{title}][{features}][{misc}].{filetype}"

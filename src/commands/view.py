@@ -25,26 +25,27 @@ class View(Config):
 
     # view command runner
     def run(self):
-        if self.args.view_command == 'artists':
-            if self.args.tracks:
-                self.msg = self.get_artists_tracks()
-            elif self.args.names:
-                self.msg = self.get_artists()
+        with self.console.status("[bold green]Working...") as status:
+            if self.args.view_command == 'artists':
+                if self.args.tracks:
+                    self.msg = self.get_artists_tracks()
+                elif self.args.names:
+                    self.msg = self.get_artists()
 
-        elif self.args.view_command == 'songs':
-            if self.args.artist:
-                self.artist = self.args.artist
-                self.msg = self.get_songs_by_artist()
-            elif self.args.id:
-                self.id = self.args.id
-                self.msg = self.get_songs_by_id()
-            elif self.args.name:
-                self.name = self.args.name
-                self.msg = self.get_songs_by_name()
-        else:
-            self.msg = self.args.view_command
+            elif self.args.view_command == 'songs':
+                if self.args.artist:
+                    self.artist = self.args.artist
+                    self.msg = self.get_songs_by_artist()
+                elif self.args.id:
+                    self.id = self.args.id
+                    self.msg = self.get_songs_by_id()
+                elif self.args.name:
+                    self.name = self.args.name
+                    self.msg = self.get_songs_by_name()
+            else:
+                self.msg = self.args.view_command
 
-        self.console.print(Markdown(self.msg))
+            self.console.log(Markdown(self.msg))
 
     # View - artists commands
     def get_artists(self):

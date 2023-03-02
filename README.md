@@ -281,7 +281,6 @@ AudioDotTurn is currently in alpha testing and is provided as is with no warrant
 
 # Roadmap
 
- - Remove [youtube_id] dependency
  - Allow to confirm/deny filename changes
  - General regex adjusting for broader use
  - Refactoring code for better readability and maintainability

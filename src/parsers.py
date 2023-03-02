@@ -6,7 +6,7 @@ defaults = Config()
 
 # Create main parser
 parser = argparse.ArgumentParser(description='Format, orgranize and retrieve data from files in an audio library.')
-parser.add_argument('--defaults', nargs='?', choices = ['settings', 'options', 'all'], help='Show default settings')
+parser.add_argument('--defaults', nargs='?', choices = ['settings', 'options', 'all'], const='all', help='Show default settings')
 parser.add_argument('-v', '--version', action='store_true', help='Show default settings')
 
 # Create subparsers

@@ -1,4 +1,5 @@
 import argparse
+import sys
 from src.parsers import parsers, args, defaults
 from src.commands import Create, View
 from src import VERSION
@@ -15,7 +16,7 @@ class CLI:
 
         if self.args.version:
             defaults.console.print(Markdown(f'# {VERSION}'))
-            exit(1)
+            sys.exit(1)
             
 
         # display defaults (--defaults)
@@ -25,9 +26,9 @@ class CLI:
                 defaults.display_settings()
             elif display == 'options':
                 defaults.display_options()
-            else:
+            elif display == 'all':
                 defaults.display_all()
-            exit(1)
+            sys.exit(1)
 
         # create - positional arg
         elif self.args.command == 'create':
@@ -37,7 +38,7 @@ class CLI:
             # If no args send help text
             if not any((self.args.dirs, self.args.formatfile, self.args.formatdir, self.args.dump)):
                 self.create_parser.print_help()
-                exit(1)
+                sys.exit(1)
             
             # run creator
             creator.run()
@@ -50,7 +51,7 @@ class CLI:
             # If no data arg send help text
             if not self.args.data:
                 self.view_parser.print_help()
-                exit(1)
+                sys.exit(1)
             
             # run viewer
             if any(args.view_command):
@@ -61,9 +62,9 @@ class CLI:
         else:
             self.parser.print_help()
 
-def main():
-    # Initiate tool
-    tool = CLI(args=args, parsers=parsers)
+def main() -> None:
+    # Run cli
+    CLI(args=args, parsers=parsers)
 
 if __name__ == "__main__":
     main()

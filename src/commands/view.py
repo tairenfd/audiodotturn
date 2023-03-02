@@ -24,7 +24,7 @@ class View(Config):
             self.args.view_command = f'{self.error_msg}'
 
     # view command runner
-    def run(self):
+    def run(self) -> None:
         with self.console.status("[bold green]Working...") as status:
             if self.args.view_command == 'artists':
                 if self.args.tracks:
@@ -48,7 +48,7 @@ class View(Config):
             self.console.log(Markdown(self.msg))
 
     # View - artists commands
-    def get_artists(self):
+    def get_artists(self) -> str:
         # get list of all artists in dataset
         artists_list = []
         for artist in self.dataset:
@@ -56,7 +56,7 @@ class View(Config):
 
         return f"# Database: {self.filename}\n\n" + "## Artists:\n" + '\n'.join(artists_list)
 
-    def get_artists_tracks(self):
+    def get_artists_tracks(self) -> str:
         # get list of all artists and their tracks in dataset
         artists_list = []
         for artist in self.dataset:
@@ -73,7 +73,7 @@ class View(Config):
         return f"# Database: {self.filename}\n\n" + "## Artists and their Tracks:\n" + '\n'.join(artists_list)
 
     # View - songs commands
-    def get_songs_by_artist(self):
+    def get_songs_by_artist(self) -> str:
         # get list of all songs by an artist (will search by substring) name in dataset
         artists_list = []
         for artist_key in self.dataset.keys():
@@ -89,7 +89,7 @@ class View(Config):
 
         return f"# Database: {self.filename}\n\n" + f"## Songs by artist matching '{self.artist}':\n" + '\n'.join(artists_list)
 
-    def get_songs_by_id(self):
+    def get_songs_by_id(self) -> str:
         # get list of all songs by their youtube id in dataset
         artists_list = []
         for artist_key in self.dataset.keys():
@@ -105,7 +105,7 @@ class View(Config):
 
         return f"# Database: {self.filename}\n\n" + f"## Songs by ID {self.youtube_id}:\n" + '\n'.join(artists_list)
 
-    def get_songs_by_name(self):
+    def get_songs_by_name(self) -> str:
     # get list of all songs by their name in dataset, will search by substring
         artists_list = []
         for artist_key in self.dataset.keys():

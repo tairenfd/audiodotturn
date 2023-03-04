@@ -6,11 +6,22 @@ import argparse
 from rich.tree import Tree
 from rich.json import JSON
 from rich.markdown import Markdown
-from src.config import Config
-
+from audiodotturn.config import Config
 
 class Create(Config):
+    """
+    Class that provides functionality for creating formatted files, directories and JSON data.
+    """
     def __init__(self, args: argparse.Namespace):
+        """
+        Initialize the Create class object.
+
+        Args:
+        - args: An argparse.Namespace object containing the command line arguments passed to the Create class object.
+
+        Returns:
+        - None
+        """
         self.args = args
         # grab defaults
         super().__init__()
@@ -22,7 +33,16 @@ class Create(Config):
 
     # create runner
     def run(self) -> None:
-        with self.console.status("[bold green]Working...") as status:
+        """
+        Run the Create class.
+
+        Args:
+        - None
+
+        Returns:
+        - None
+        """
+        with self.console.status("[bold green]Working..."):
             if self.args.dirs:
                 self.msg = self.dirs()
             elif self.args.formatfile:
@@ -45,6 +65,15 @@ class Create(Config):
     # check whether a file is formatted, unable to be formatted, or
     # unchanged due to already being formatted or an incompatible extension
     def form_or_not(self, files_list: list) -> tuple[list[str], list[str], list[str], list[str]]:
+        """
+        Check whether a file is formatted, unable to be formatted, or unchanged due to already being formatted or an incompatible extension.
+
+        Args:
+        - files_list: A list of filenames.
+
+        Returns:
+        - A tuple containing four lists: the formatted files, the unformatted files, the already formatted files, and the statistics of the number of each type of file.
+        """
         formatted = ["\n## Formatted:"]
         not_formatted = ["\n## Not Formatted:"]
         already_formatted = ["\n## No Change:"]
@@ -65,6 +94,15 @@ class Create(Config):
 
     # create directories based off of unique artists in music library
     def dirs(self) -> str:
+        """
+        Create directories based off of unique artists in music library.
+
+        Args:
+        - None
+
+        Returns:
+        - A string message about the directories created and the number of files that were organized.
+        """
         directory = self.directory.rstrip("/")
         artists, files = set(), set()
         created = []
@@ -95,6 +133,7 @@ class Create(Config):
                             f"{self.directory}/{filename}", f"{artist_dir}/{filename}"
                         )
                     except:
+                        self.console.log(f"{self.directory}/{filename} unsuccesful move to {artist_dir}/{filename}")
                         pass
         return (
             f"### Organized {len(files)} files for {len(artists)} artists.\n"
@@ -104,6 +143,13 @@ class Create(Config):
 
     # Attempt to format all files in a given directory, uses form_or_not for listing data to user, dry run settings are handled for this in format_file
     def format_files_dir(self) -> str:
+        """
+        Goes through all files in the given directory, formats the ones that can be formatted, and returns a string
+        summarizing the results of the formatting.
+
+        Returns:
+        - A string summarizing the results of the formatting.
+        """
         directory = self.directory.rstrip("/")
         try:
             # go through all files in given directory and only grab the actual files, not directory names and such
@@ -122,6 +168,15 @@ class Create(Config):
 
     # file argument really only used by format_files_dir, otherwise will use self.filename
     def format_file(self, file: str = None) -> str:
+        """
+        Formats a single file name according to the formatter specified in the class.
+
+        Args:
+        - file: A string representing the name of the file to be formatted. If None, uses the filename specified in the class.
+
+        Returns:
+        - A string representing the formatted file name.
+        """
         # get filename and create a temp filename
         if file:
             self.filename = file
@@ -141,7 +196,14 @@ class Create(Config):
         return new_file
 
     def json_dump(self) -> str | tuple[str, str]:
+        """
+        Finds all properly formatted files in the directory specified in the class and writes the resulting data to a JSON file. 
+        If dry-run is enabled, does not actually write the file, but instead returns a string representation of the data that 
+        would have been written to the file. Returns a tuple of two strings in this case.
 
+        Returns:
+        - A string summarizing the result of the JSON dump. If dry-run is enabled, returns a tuple of two strings instead.
+        """
         # check if valid directory
         if not os.path.isdir(self.directory):
             return json.dumps(
@@ -214,7 +276,7 @@ class Create(Config):
         # if not a dry run then create the json dump in the given location
         # otherwise just print it
         if not self.dry:
-            with open(os.path.join(self.filename), "w") as f:
+            with open(os.path.join(self.filename), "w", encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
             return json.dumps(
                 {
@@ -238,8 +300,21 @@ class Create(Config):
         ), json.dumps(data)
 
     # FORMATTERS
-
     def youtube_formatter(self, file: str) -> str:
+        """
+        Formats a given filename string to match the format used by YouTube videos.
+        The format is as follows:
+        [Artist][Title][Features][Misc][YouTube ID].[Filetype]
+
+        The method checks for existing data in the filename and fills in missing data with defaults
+        specified in the configuration file.
+        
+        Args:
+        - file (str): The name of the file to be formatted.
+        
+        Returns:
+        - str: The formatted filename string.
+        """
         # check if already formatted or if not an audio file, if so add $$ to temp name
         format_check = re.search(
             r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file
@@ -295,18 +370,25 @@ class Create(Config):
         else:
             if any(features):
                 self.features = []
-                self.features.append(
-                    features_1.group(1).strip()
-                ) if features_1 else None
-                self.features.append(
-                    features_2.group(2).strip()
-                ) if features_2 else None
-                self.features.append(
-                    features_3.group(1).strip()
-                ) if features_3 else None
-                self.features.append(
-                    features_4.group(2).strip()
-                ) if features_4 else None
+                if features_1:
+                    self.features.append(
+                        features_1.group(1).strip()
+                    )
+                
+                if features_2:
+                    self.features.append(
+                        features_2.group(2).strip()
+                    ) 
+                if features_3:
+                    self.features.append(
+                        features_3.group(1).strip()
+                    ) 
+
+                if features_4:
+                    self.features.append(
+                        features_4.group(2).strip()
+                    )
+
                 self.features = ", ".join(self.features).replace("'", "")
 
             features = self.features
@@ -350,6 +432,20 @@ class Create(Config):
             return f"[{artist}][{title}][{features}][{misc}][{youtube_id}].{filetype}"
 
     def standard_formatter(self, file: str) -> str:
+        """
+        Formats a given filename string to match a standard format.
+        The format is as follows:
+        [Artist][Title][Features][Misc].[Filetype]
+
+        The method checks for existing data in the filename and fills in missing data with defaults
+        specified in the configuration file.
+        
+        Args:
+        - file (str): The name of the file to be formatted.
+        
+        Returns:
+        - str: The formatted filename string.
+        """
         # check if already formatted or if not an audio file, if so add $$ to temp name
         format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)
         format_check_extra = re.search(
@@ -405,18 +501,25 @@ class Create(Config):
         else:
             if any(features):
                 self.features = []
-                self.features.append(
-                    features_1.group(1).strip()
-                ) if features_1 else None
-                self.features.append(
-                    features_2.group(2).strip()
-                ) if features_2 else None
-                self.features.append(
-                    features_3.group(1).strip()
-                ) if features_3 else None
-                self.features.append(
-                    features_4.group(2).strip()
-                ) if features_4 else None
+                if features_1:
+                    self.features.append(
+                        features_1.group(1).strip()
+                    )
+                
+                if features_2:
+                    self.features.append(
+                        features_2.group(2).strip()
+                    ) 
+                if features_3:
+                    self.features.append(
+                        features_3.group(1).strip()
+                    ) 
+
+                if features_4:
+                    self.features.append(
+                        features_4.group(2).strip()
+                    )
+
                 self.features = ", ".join(self.features).replace("'", "")
 
             features = self.features

@@ -2,10 +2,13 @@ import os
 import json
 import argparse
 from rich.markdown import Markdown
-from src.config import Config
+from audiodotturn.config import Config
 
 
 class View(Config):
+    """
+    A class that provides functionality for viewing the contents of the dataset.
+    """
     def __init__(self, args: argparse.Namespace):
         self.args = args
         # get defaults
@@ -17,15 +20,24 @@ class View(Config):
             self.name = self.args.name if self.args.name else ''
         # attempt to open the given dataset
         try:
-            with open(os.path.join(self.args.data), 'r') as f:
+            with open(os.path.join(self.args.data), 'r', encoding='utf-8') as f:
                 self.dataset = json.load(f, object_hook=dict)
         except Exception as error:
             self.dataset = {}
-            self.args.view_command = f'{self.error_msg}'
+            self.args.view_command = f'/f"{self.error_msg}"'
 
     # view command runner
     def run(self) -> None:
-        with self.console.status("[bold green]Working...") as status:
+        """
+        Run the View class.
+
+        Args:
+        - None
+
+        Returns:
+        - None
+        """
+        with self.console.status("[bold green]Working..."):
             if self.args.view_command == 'artists':
                 if self.args.tracks:
                     self.msg = self.get_artists_tracks()
@@ -57,6 +69,9 @@ class View(Config):
         return f"# Database: {self.filename}\n\n" + "## Artists:\n" + '\n'.join(artists_list)
 
     def get_artists_tracks(self) -> str:
+        """
+        Returns a formatted string containing a list of all artists in the dataset.
+        """
         # get list of all artists and their tracks in dataset
         artists_list = []
         for artist in self.dataset:
@@ -74,6 +89,9 @@ class View(Config):
 
     # View - songs commands
     def get_songs_by_artist(self) -> str:
+        """
+        Returns a formatted string containing a list of all the artists and their songs in the dataset.
+        """
         # get list of all songs by an artist (will search by substring) name in dataset
         artists_list = []
         for artist_key in self.dataset.keys():
@@ -90,6 +108,10 @@ class View(Config):
         return f"# Database: {self.filename}\n\n" + f"## Songs by artist matching '{self.artist}':\n" + '\n'.join(artists_list)
 
     def get_songs_by_id(self) -> str:
+        """
+        Returns a formatted string containing a list of all songs by a specified youtube_id in the 
+        dataset.
+        """
         # get list of all songs by their youtube id in dataset
         artists_list = []
         for artist_key in self.dataset.keys():
@@ -106,7 +128,10 @@ class View(Config):
         return f"# Database: {self.filename}\n\n" + f"## Songs by ID {self.youtube_id}:\n" + '\n'.join(artists_list)
 
     def get_songs_by_name(self) -> str:
-    # get list of all songs by their name in dataset, will search by substring
+        """
+        Returns a formatted string containing a list of all songs by a specified title/name in the 
+        dataset.
+        """
         artists_list = []
         for artist_key in self.dataset.keys():
             for track in self.dataset[artist_key]['tracks']:

@@ -1,6 +1,9 @@
 AudioDotTurn
 ============
 
+.. image:: https://img.shields.io/pypi/v/audiodotturn.svg
+    :target: https://pypi.org/project/audiodotturn/
+
 If you’re tired of your audio files being a complete mess with poorly
 formatted names and missing metadata this might be your solution.
 
@@ -38,67 +41,40 @@ Installation
 
 .. code:: sh
 
-     pip install git+https://github.com/tairenfd/audiodotturn.git
+	 pip install audiodotturn
 
-or
-
-.. code:: sh
-
-     git clone https:github.com/tairenfd/audiodotturn.git
-     pip install ./ 
-
-or build from current release source 1. Download the tar.gz package from
-the project’s GitHub release page or wherever it is hosted.
-
-2. Extract the contents of the package to a directory of your choice
-   using the following command:
+Or install from source with
 
 .. code:: sh
 
-      tar -xvzf audiodotturn-v0.2.5.tar.gz
+	 git clone https://github.com/tairenfd/audiodotturn.git
+	 cd audiodotturn
+	 pip install .
 
-3. Change into the extracted directory:
+Set User Config
+===============
 
-.. code:: sh
+Depending on how your system and python PATHs are set the installation path may differ.
+Usually however, you should be able to find the default config.json in one of the below
 
-      cd audiodotturn-v0.2.5
-
-4. Install the dependencies by running the following command:
-
-.. code:: sh
-
-      pip install -r requirements.txt
-
-Note: If you’re using a virtual environment, make sure it’s activated
-before running this command.
-
-5. Install AudioDotTurn by running the following command:
-
-.. code:: sh
-
-      pip install ./
-
-Finally
--------
-
-Verify that AudioDotTurn is installed correctly by running the following
-command:
-
-.. code:: sh
-
-      audiodotturn --version
-
-This should print the version number of AudioDotTurn.
-
-That’s it! You should now be able to use AudioDotTurn by running the
-``audiodotturn`` command in your terminal.
+- /home/user/.local/lib/python{3}.{11}/site-packages/audiodotturn/config/config.json
+- /usr/local/lib/python{x}.{x}/site-packages/audiodotturn/config/config.json
+- /usr/lib/python{x}.{x}/site-packages/audiodotturn/config/config.json
 
 Dependencies
 ============
 
-External libraries: - `rich <https://github.com/Textualize/rich>`__
+External libraries: 
 
-Standard: - os - re - json - argparse - shutil
+	- `rich <https://github.com/Textualize/rich>`__
+
+Standard: 
+
+	- os 
+	- re 
+	- json 
+	- argparse 
+	- shutil
 
 Usage
 =====

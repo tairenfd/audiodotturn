@@ -71,7 +71,7 @@ class Parser:
 
         for setting in self.settings_list:
             self.set_parser.add_argument(f"--{setting['name']}", dest=setting['name'], type=str, help=setting['description'])
-        self.set_parser.add_argument("--dry", "--dry_run", action='store_true', default=defaults.dry, help='Dry run')
+        self.set_parser.add_argument("--dry", "--dry_run", action='store_true', help='Dry run')
 
         self.create_parser = self.subparsers.add_parser('create', help='Create subcommands')
         self.create_parser.add_argument('-d', '--dirs', action='store_true', help='Organize files in artist directories')
@@ -80,7 +80,7 @@ class Parser:
         self.create_parser.add_argument('-F', '--formatdir', action='store_true', help='Format all files in directory')
         self.create_parser.add_argument('-D', '--dump', action='store_true', help='Dump directory into JSON file')
         self.create_parser.add_argument('--filename', type=str, default=defaults.filename, help='Name of JSON file')
-        self.create_parser.add_argument('--dry', action='store_true', default=defaults.dry ,help='Dry run')
+        self.create_parser.add_argument('--dry', action='store_true', help='Dry run')
         self.create_parser.add_argument('--directory', type=str, default=defaults.directory, help='Directory to organize or format files')
 
         self.view_parser = self.subparsers.add_parser('view', help='View subcommands')
@@ -89,8 +89,8 @@ class Parser:
 
         # Create parser for the "artists" subcommand of the "view" command
         self.artists_parser = self.view_subparsers.add_parser('artists', help='View list of artists')
-        self.artists_parser.add_argument('-t', '--tracks', action='store_true', default='False', help='View list of artists and their tracks')
-        self.artists_parser.add_argument('-n', '--names', action='store_true', default='False', help='View list of artist names')
+        self.artists_parser.add_argument('-t', '--tracks', action='store_true', help='View list of artists and their tracks')
+        self.artists_parser.add_argument('-n', '--names', action='store_true', help='View list of artist names')
 
         self.songs_parser = self.view_subparsers.add_parser('songs', help='View list of songs')
         self.songs_parser.add_argument('-a', '--artist', type=str, help='View list of songs by artist')

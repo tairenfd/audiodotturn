@@ -182,7 +182,7 @@ You can set a default formatter in the config.json file, or set it
 during runtime with ``-x [formatter]``
 
 To view the currently set default formatter use
-``audiodotturn --default settings`` 
+``audiodotturn --defaults settings`` 
 
 - default formatter listed under ``program defaults -> formatter``
 

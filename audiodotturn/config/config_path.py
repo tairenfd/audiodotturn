@@ -4,7 +4,7 @@ Module used to initialize CONFIG_PATH for audiodotturn config.
 ADT_CONFIG_PATH is a list of common configuration paths for a Linux environment.
 
 .. todo::
-   Add option for shell env to be set for CONFIG_PATH.
+   Add option for shell env to be set for ADT_CONFIG_PATH.
 
 .. note::
    Failure of this module will result in sys.exit.

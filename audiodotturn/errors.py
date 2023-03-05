@@ -6,12 +6,13 @@ def error_handler(error_msg: list, console: Console, error: Exception) -> None:
     """
     General error message handling for audiodotturn
 
-    args:
-    - error_msg: list produced by config, typically self.error_msg
-    - console: rich console to use
-    - error: Exception being handled
-    returns:
-    - Calls sys.exit()
+    Args:
+        list: error_msg list produced by config, typically self.error_msg
+        rich.console.Console: rich console to use
+        Exception: Exception being handled
+
+    Returns:
+        None: Calls sys.exit()
     """
     if "error" in error_msg:
         console.log(f'[yellow]Error -> [red]{error}')

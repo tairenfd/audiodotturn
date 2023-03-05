@@ -15,10 +15,10 @@ class Set(Config):
         Initialize the Set class object.
 
         Args:
-        - args: An argparse.Namespace object containing the command line arguments passed to the Create class object.
+            args: An argparse.Namespace object containing the command line arguments passed to the Create class object.
 
         Returns:
-        - None
+            None
         """
         self.args = args
         super().__init__()
@@ -80,8 +80,8 @@ class Set(Config):
         Writes the current configuration data to the JSON file. If dry is True, prints the hypothetical
         changes without actually writing them to the file.
 
-        args:
-        - dry: bool flag for dry run
+        Args:
+            dry: bool flag for dry run
         """
         if dry:
             self.console.log("\n\n[yellow]DRY RUN MODE. NO CHANGES WILL BE WRITTEN TO THE CONFIG FILE.[/yellow]\n\n" + "Hypothetical config created:\n\n" + json.dumps(self.defaults, indent=4))
@@ -98,8 +98,8 @@ class Set(Config):
         """
         Sets the default value for artist.
 
-        args:
-        - new_artist: string to use as default unknown artist format
+        Args:
+            new_artist: string to use as default unknown artist format
         """
         self.defaults["settings"]["formatting_defaults"]["artist"] = new_artist
 
@@ -107,8 +107,8 @@ class Set(Config):
         """
         Sets the default value for title.
     
-        args:
-        - new_title: string to use as default unknown title format
+        Args:
+            new_title: string to use as default unknown title format
         """
         self.defaults["settings"]["formatting_defaults"]["title"] = new_title
 
@@ -116,8 +116,8 @@ class Set(Config):
         """
         Sets the default value for features.
 
-        args:
-        - new_features: string to use as default unknown features format
+        Args:
+            new_features: string to use as default unknown features format
         """
         self.defaults["settings"]["formatting_defaults"]["features"] = new_features
 
@@ -125,8 +125,8 @@ class Set(Config):
         """
         Sets the default value for misc.
 
-        args:
-        - new_misc: string to use as default unknown misc format
+        Args:
+            new_misc: string to use as default unknown misc format
         """
         self.defaults["settings"]["formatting_defaults"]["misc"] = new_misc
 
@@ -134,8 +134,8 @@ class Set(Config):
         """
         Sets the default value for YouTube ID.
 
-        args:
-        - new_youtube_id: string to use as default unknown youtube_id format
+        Args:
+            new_youtube_id: string to use as default unknown youtube_id format
         """
         self.defaults["settings"]["formatting_defaults"]["youtube_id"] = new_youtube_id
 
@@ -143,8 +143,8 @@ class Set(Config):
         """
         Sets the filetype in the configuration data.
 
-        args:
-        - new_filetype: string to use as default unknown filetype format
+        Args:
+            new_filetype: string to use as default unknown filetype format
         """
         self.defaults["settings"]["formatting_defaults"]["filetype"] = new_filetype
 
@@ -152,8 +152,8 @@ class Set(Config):
         """
         Sets the dry flag in the program defaults in the configuration data.
 
-        args:
-        - new_dry_set: string with value corresponding to the default dry run status
+        Args:
+            new_dry_set: string with value corresponding to the default dry run status
         """
         self.defaults["settings"]["program_defaults"]["dry"] = new_dry_set
 
@@ -161,8 +161,8 @@ class Set(Config):
         """
         Sets the filename in the program defaults in the configuration data.
 
-        args:
-        - new_filename: string with value corresponding to the default json filename
+        Args:
+            new_filename: string with value corresponding to the default json filename
         """
         self.defaults["settings"]["program_defaults"]["filename"] = new_filename
 
@@ -170,8 +170,8 @@ class Set(Config):
         """
         Sets the directory in the program defaults in the configuration data.
 
-        args:
-        - new_directory: string with value corresponding to the default working directory
+        Args:
+            new_directory: string with value corresponding to the default working directory
         """
         self.defaults["settings"]["program_defaults"]["directory"] = new_directory
 
@@ -179,8 +179,8 @@ class Set(Config):
         """
         Sets the formatter in the program defaults in the configuration data.
 
-        args:
-        - new_formatter: string with value corresponding to an avaliable formatter
+        Args:
+            new_formatter: string with value corresponding to an avaliable formatter
         """
         self.defaults["settings"]["program_defaults"]["formatter"] = new_formatter
 
@@ -188,8 +188,8 @@ class Set(Config):
         """
         Sets the error message in the program defaults in the configuration data.
         
-        args:
-        - new_error_msg: string formatted as 'option | option | option' with error message formats you'd like audiodotturn to display
+        Args:
+            new_error_msg: string formatted as 'option | option | option' with error message formats you'd like audiodotturn to display
         """
         self.defaults["settings"]["program_defaults"]["error_msg"] = new_error_msg
 
@@ -197,7 +197,7 @@ class Set(Config):
         """
         Sets the extensions in the program defaults in the configuration data.
         
-        args:
-        - new_exts: string formatted as '.ext1, .ext2, .ext3' with extensions you'd like audiodotturn to format
+        Args:
+            new_exts: string formatted as '.ext1, .ext2, .ext3' with extensions you'd like audiodotturn to format
         """
         self.defaults["settings"]["program_defaults"]["exts"] = new_exts

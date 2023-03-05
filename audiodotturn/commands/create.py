@@ -20,10 +20,10 @@ class Create(Config):
         Initialize the Create class object.
 
         Args:
-        - args: An argparse.Namespace object containing the command line arguments passed to the Create class object.
+            args: An argparse.Namespace object containing the command line arguments passed to the Create class object.
 
         Returns:
-        - None
+            None
         """
         self.args = args
         # grab defaults
@@ -41,10 +41,10 @@ class Create(Config):
         Run the Create class.
 
         Args:
-        - None
+            None
 
         Returns:
-        - None
+            None
         """
         with self.console.status("[bold green]Working..."):
             if self.args.dirs:
@@ -75,10 +75,10 @@ class Create(Config):
         Check whether a file is formatted, unable to be formatted, or unchanged due to already being formatted or an incompatible extension.
 
         Args:
-        - files_list: A list of filenames.
+            files_list: A list of filenames.
 
         Returns:
-        - A tuple containing four lists: the formatted files, the unformatted files, the already formatted files, and the statistics of the number of each type of file.
+            tuple: A tuple containing four lists: the formatted files, the unformatted files, the already formatted files, and the statistics of the number of each type of file.
         """
         formatted = ["\n## Formatted:"]
         not_formatted = ["\n## Not Formatted:"]
@@ -104,10 +104,10 @@ class Create(Config):
         Create directories based off of unique artists in music library.
 
         Args:
-        - None
+            None
 
         Returns:
-        - A string message about the directories created and the number of files that were organized.
+            str: A string message about the directories created and the number of files that were organized.
         """
         directory = self.directory.rstrip("/")
         artists, files = set(), set()
@@ -155,7 +155,7 @@ class Create(Config):
         summarizing the results of the formatting.
 
         Returns:
-        - A string summarizing the results of the formatting.
+            str: A string summarizing the results of the formatting.
         """
         directory = self.directory.rstrip("/")
         try:
@@ -179,10 +179,10 @@ class Create(Config):
         Formats a single file name according to the formatter specified in the class.
 
         Args:
-        - file: A string representing the name of the file to be formatted. If None, uses the filename specified in the class.
+            file: A string representing the name of the file to be formatted. If None, uses the filename specified in the class.
 
         Returns:
-        - A string representing the formatted file name.
+            str: A string representing the formatted file name.
         """
         # get filename and create a temp filename
         if file:
@@ -209,7 +209,7 @@ class Create(Config):
         would have been written to the file. Returns a tuple of two strings in this case.
 
         Returns:
-        - A string summarizing the result of the JSON dump. If dry-run is enabled, returns a tuple of two strings instead.
+            str: A string summarizing the result of the JSON dump. If dry-run is enabled, returns a tuple of two strings instead.
         """
         # check if valid directory
         if not os.path.isdir(self.directory):
@@ -319,10 +319,10 @@ class Create(Config):
         specified in the configuration file.
 
         Args:
-        - file (str): The name of the file to be formatted.
+            file (str): The name of the file to be formatted.
 
         Returns:
-        - str: The formatted filename string.
+            str: The formatted filename string.
         """
         # check if already formatted or if not an audio file, if so add $$ to temp name
         format_check = re.search(
@@ -442,10 +442,10 @@ class Create(Config):
         specified in the configuration file.
 
         Args:
-        - file (str): The name of the file to be formatted.
+            file (str): The name of the file to be formatted.
 
         Returns:
-        - str: The formatted filename string.
+            str: The formatted filename string.
         """
         # check if already formatted or if not an audio file, if so add $$ to temp name
         format_check = re.search(r"\[(.+?)\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\.(.+?)$", file)

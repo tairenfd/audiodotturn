@@ -8,6 +8,9 @@ class Parser:
     def __init__(self):
         """
         Initializes the parser with arguments and sub-commands.
+
+        Returns:
+            None
         """
         self.parsers = tuple[argparse.ArgumentParser, ...]
         self.parser = argparse.ArgumentParser(description='Format, orgranize and retrieve data from files in an audio library.')
@@ -113,6 +116,6 @@ class Parser:
             args (list): The arguments to parse. If None, command-line arguments are used.
 
         Returns:
-            The parsed arguments.
+            Namespace: argparse.Namespace object of the parsed arguments.
         """
         return self.parser.parse_args(args)

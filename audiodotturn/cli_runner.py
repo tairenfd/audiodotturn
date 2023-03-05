@@ -19,6 +19,9 @@ class CLI:
         Args:
             args (argparse.Namespace): The arguments passed to the CLI.
             parsers (tuple((argparse.ArgumentParser, ...))): The parsers for the CLI.
+        
+        Returns:
+            None
         """
         self.args = args
         self.parser = parsers[0]
@@ -28,6 +31,9 @@ class CLI:
     def run(self) -> None:
         """
         Executes the appropriate action based on the CLI arguments.
+
+        Returns:
+            None
         """
         if self.args.version:
             self.show_version()
@@ -65,12 +71,18 @@ class CLI:
     def show_version(self) -> None:
         """
         Shows the current version of the program.
+
+        Returns:
+            None
         """
         defaults.console.print(Markdown(f'# {VERSION}'))
 
     def show_defaults(self):
         """
         Shows the default values for the program options.
+    
+        Returns:
+            None
         """
         display = self.args.defaults
         if display == 'options':
@@ -86,6 +98,9 @@ def main() -> None:
     """
     Get args from main parser    
     Initialize and start the CLI runner
+
+    Returns:
+        None
     """
     # Run cli
     parser = Parser()

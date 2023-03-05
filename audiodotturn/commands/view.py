@@ -11,6 +11,15 @@ class View(Config):
     A class that provides functionality for viewing the contents of the dataset.
     """
     def __init__(self, args: argparse.Namespace):
+        """
+        Initialize View class
+
+        Args:
+            args: An argparse.Namespace object containing the command line arguments passed to the Create class object.
+
+        Returns:
+            None
+        """
         self.args = args
         # get defaults
         super().__init__()
@@ -34,10 +43,10 @@ class View(Config):
         Run the View class.
 
         Args:
-        - None
+            None
 
         Returns:
-        - None
+            None
         """
         with self.console.status("[bold green]Working..."):
             if self.args.view_command == 'artists':
@@ -64,7 +73,8 @@ class View(Config):
     # View - artists commands
     def get_artists(self) -> str:
         """
-        Returns a formatted string containing a list of all artists in the dataset.
+        Returns:
+            str: a formatted string containing a list of all artists in the dataset.
         """        
         # get list of all artists in dataset
         artists_list = []
@@ -75,7 +85,8 @@ class View(Config):
 
     def get_artists_tracks(self) -> str:
         """
-        Returns a formatted string containing a list of all the artists and their songs in the dataset.
+        Returns:
+            str: a formatted string containing a list of all the artists and their songs in the dataset.
         """
         # get list of all artists and their tracks in dataset
         artists_list = []
@@ -95,7 +106,8 @@ class View(Config):
     # View - songs commands
     def get_songs_by_artist(self) -> str:
         """
-        Returns a formatted string containing a list of all songs by a specified artist in the dataset.
+        Returns:
+            str: a formatted string containing a list of all songs by a specified artist in the dataset.
         """
         # get list of all songs by an artist (will search by substring) name in dataset
         artists_list = []
@@ -114,7 +126,8 @@ class View(Config):
 
     def get_songs_by_id(self) -> str:
         """
-        Returns a formatted string containing a list of all songs by a specified youtube_id in the 
+        Returns:
+            str: a formatted string containing a list of all songs by a specified youtube_id in the 
         dataset.
         """
         # get list of all songs by their youtube id in dataset
@@ -134,7 +147,8 @@ class View(Config):
 
     def get_songs_by_name(self) -> str:
         """
-        Returns a formatted string containing a list of all songs by a specified title/name in the 
+        Returns:
+            str: a formatted string containing a list of all songs by a specified title/name in the 
         dataset.
         """
         artists_list = []

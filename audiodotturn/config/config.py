@@ -12,6 +12,9 @@ class Config:
         """
         Constructor for Config class. 
         Loads configuration data from JSON file and sets default values.
+
+        Returns:
+            None
         """
         self.console = Console()
 
@@ -43,6 +46,9 @@ class Config:
     def display_all(self) -> None:
         """
         Displays all configuration data in a formatted table.
+
+        Returns:
+            None
         """
         table = Table(title="Configurations", style="bold magenta")
         table.add_column("Section", justify="center", style="cyan", min_width=30)
@@ -90,6 +96,9 @@ class Config:
     def display_formatting_defaults(self) -> None:
         """
         Displays the formatting defaults in a formatted table.
+
+        Returns:
+            None
         """
         table = Table(title="Formatting Defaults", style="bold blue")
         table.add_column("Setting", style="magenta", min_width=10)
@@ -103,6 +112,9 @@ class Config:
     def display_program_defaults(self) -> None:
         """
         Displays the current defaults in a formatted table.
+
+        Returns:
+            None
         """
         table = Table(title="Program Defaults", style="bold green")
         table.add_column("Setting", style="yellow", min_width=10)
@@ -116,6 +128,9 @@ class Config:
     def display_options(self) -> None:
         """
         Displays the config options in a formatted table.
+
+        Returns:
+            None
         """
         table = Table(title="Options", show_header=True, header_style="bold magenta")
         table.add_column("Category", style="cyan", justify="center", min_width=30)

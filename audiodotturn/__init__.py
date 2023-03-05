@@ -12,4 +12,4 @@ Constants:
 - `VERSION`: the version of the AudioDotTurn package
 """
 
-__version__ = VERSION = "v0.3.5"
+__version__ = VERSION = "v0.3.4"

@@ -20,8 +20,8 @@ class View(Config):
         Returns:
             None
         """
-        self.args = args
         # get defaults
+        self.args = args
         super().__init__()
         self.msg = ''
         # set user defined args

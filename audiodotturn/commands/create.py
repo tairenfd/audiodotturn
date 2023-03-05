@@ -25,8 +25,8 @@ class Create(Config):
         Returns:
             None
         """
-        self.args = args
         # grab defaults
+        self.args = args
         super().__init__()
         # set user defined values
         self.dry = args.dry

@@ -32,6 +32,7 @@ class Set(Config):
             "changed": [],
             "unchanged": []
         }
+        self.console.log(f'\nMaking changes in `{self.config_path}`\n')
         for arg_name, arg_value in vars(self.args).items():
             if arg_name not in ['dry', 'command', 'version', 'default'] and arg_value is not None:
                 _store_set = None
@@ -69,13 +70,15 @@ class Set(Config):
                         self.console.log("\n[green]Defaults would have been updated successfully!")
                     else:
                         self.console.log(f"\n[green]Success! Defaults saved in {self.config_path}!")
+                else:
+                    self.console.log('\n[green]No changes made!\n')
             except IOError as error:
                 self.console.log("\n[red]No settings were updated.\n")
                 error_handler(self.error_msg, self.console, error)
 
 
 
-    def write_config(self, dry: bool) -> None:
+    def write_config(self, dry: bool = False) -> None:
         """
         Writes the current configuration data to the JSON file. If dry is True, prints the hypothetical
         changes without actually writing them to the file.

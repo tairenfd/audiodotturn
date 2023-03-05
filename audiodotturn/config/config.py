@@ -32,7 +32,9 @@ class Config:
                 self.youtube_id = self.settings["formatting_defaults"]["youtube_id"]
                 self.filetype = self.settings["formatting_defaults"]["filetype"]
 
-                self.dry = self.settings["program_defaults"]["dry"]
+                self.dry = self.settings["program_defaults"]["dry"].lower()
+                self.dry = True if self.dry == "true" else False
+
                 self.filename = self.settings["program_defaults"]["filename"]
                 self.directory = self.settings["program_defaults"]["directory"]
                 self.formatter = self.settings["program_defaults"]["formatter"]

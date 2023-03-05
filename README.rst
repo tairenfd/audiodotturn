@@ -1,5 +1,5 @@
-AudioDotTurn
-============
+AudioDotTurn 0.3.02
+===================
 
 .. image:: https://img.shields.io/pypi/v/audiodotturn.svg
     :target: https://pypi.org/project/audiodotturn/

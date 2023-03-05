@@ -10,7 +10,7 @@
         },
         "program_defaults": {
             "dry": "False",
-            "error_msg": "Error: {error}",
+            "error_msg": "error",
             "filename": "data.json",
             "formatter": "standard",
             "directory": ".",
@@ -31,8 +31,12 @@
                 }
             },
             "error_msg": {
-                "description": "This is the error message that will be displayed if there is an issue with the program. Variables can be set within {} such as {error}.",
-                "options": "Any string you'd like to show as an error message."
+                "description": "This is the error message that will be displayed if there is an issue with the program. multiple options can be used by seperating them with '|', ie 'error | traceback'.",
+                "options": {
+                    "error": "Default error message",
+                    "traceback": "Error message with traceback added",
+                    "<custom>": "Custom error message string, add color with [<color>], for more info check out the 'rich' project docs"
+                }
             },
             "filename": {
                 "description": "This is the default filename for the JSON file used during dataset creation.",

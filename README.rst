@@ -4,7 +4,7 @@ AudioDotTurn 0.3.02
 .. image:: https://img.shields.io/pypi/v/audiodotturn.svg
     :target: https://pypi.org/project/audiodotturn/
 
-If you’re tired of your audio files being a complete mess with poorly
+If you're tired of your audio files being a complete mess with poorly
 formatted names and missing metadata this might be your solution.
 
 Using audiodotturn you can quickly and easily organize your entire audio
@@ -57,9 +57,25 @@ Set User Config
 Depending on how your system and python PATHs are set the installation path may differ.
 Usually however, you should be able to find the default config.json in one of the below
 
-- /home/user/.local/lib/python{3}.{11}/site-packages/audiodotturn/config/config.json
-- /usr/local/lib/python{x}.{x}/site-packages/audiodotturn/config/config.json
-- /usr/lib/python{x}.{x}/site-packages/audiodotturn/config/config.json
+ .. code:: sh
+
+    /home/user/.local/lib/python{3}.{11}/site-packages/audiodotturn/config/config.json
+    /usr/local/lib/python{x}.{x}/site-packages/audiodotturn/config/config.json
+    /usr/lib/python{x}.{x}/site-packages/audiodotturn/config/config.json
+
+Once the default config is found, copy it to one of the below paths with `cp <DEFAULT_CONFIG> <NEW_PATH>`
+
+.. code:: sh
+
+    ~/.config/audiodotturn/
+    ~/config/audiodotturn/
+    ~/audiodotturn/
+    ~/
+    /usr/local/etc/audiodotturn/
+    /etc/audiodotturn/
+
+Once copied rename the config file to adt_config.json and change any desired settings, if the config warning is no longer showing up,
+then your new config has loaded properly.
 
 Dependencies
 ============
@@ -79,11 +95,13 @@ Standard:
 Usage
 =====
 
-AudioDotTurn has two main commands: ``create`` and ``view``.
+AudioDotTurn has two main commands for interacting with the music library: ``create`` and ``view``.
 
 The ``create`` command allows you to format and/or organize your files,
 while the ``view`` command allows you to view information about your
 existing data.
+
+There is however a third positional argument, ``set``.
 
 The ``set`` command can also be used to set default values. It will have
 you confirm or deny any changes to ensure safety. Multiple values can be
@@ -120,8 +138,8 @@ Flags and positional arguments
          --filename      FILENAME
          --directory     PATH
          --formatter     FORMATTER
-         --error_msg     STRING
-         --exts          STRING
+         --error_msg     STRING       Seperate options with '|'   
+         --exts          STRING       Seperate options with ','
 
        Create subcommands:
          -d, --dirs                    Organize files in artist directories
@@ -150,26 +168,28 @@ Flags and positional arguments
 Choosing a formatter
 --------------------
 
-The default formatter is now the ‘standard’ formatter which applies no
+The default formatter is now the ``standard`` formatter which applies no
 youtube_id data attribute but otherwise works the same. It will still
 read formatted files with a youtube_id fine when creating a json, but
-will not create new datasets with youtube_id’s - instead putting that
-info if provided into the ‘misc’ category. This is the recommended
+will not create new datasets with youtube_id's - instead putting that
+info if provided into the ``misc`` category. This is the recommended
 formatter for general use.
 
-The ‘youtube’ formatter is primarily for files downloaded with yt-dlp
+The ``youtube`` formatter is primarily for files downloaded with yt-dlp
 that still contain a suffix of [youtube_id].ext
 
 You can set a default formatter in the config.json file, or set it
 during runtime with ``-x [formatter]``
 
 To view the currently set default formatter use
-``audiodotturn --default settings`` - default formatter listed under
-``program_defaults -> formatter``
+``audiodotturn --default settings`` 
+
+- default formatter listed under ``program defaults -> formatter``
 
 You can view the available formatters with
-``audiodotturn --defaults options`` - options will be under
-``formatter``
+``audiodotturn --defaults options`` 
+
+- options will be under ``program options -> formatter``
 
 Creating a dataset
 ------------------
@@ -181,11 +201,11 @@ three options for formatting filenames:
 
 .. code:: sh
 
-         audiodotturn create --formatfile [filename]
+         audiodotturn create -f [filename]
 
 This will format the filename using the default format.
 
-If your file doesn’t follow this format, the tool will attempt to format
+If your file doesn't follow this format, the tool will attempt to format
 it as best it can. You can also specify a custom format using the
 ``--format`` option.
 
@@ -193,7 +213,7 @@ it as best it can. You can also specify a custom format using the
 
 .. code:: sh
 
-         audiodotturn create --formatdir [directory]
+         audiodotturn create -F [directory]
 
 This will format all files in the specified directory using the default
 format.
@@ -202,7 +222,7 @@ format.
 
 .. code:: sh
 
-         audiodotturn create --dirs [directory]
+         audiodotturn create -d [directory]
 
 This will organize all files in the specified directory into artist
 directories based on the artist names in the filenames.
@@ -212,10 +232,11 @@ After formatting your filenames, you can create a dataset using the
 
 .. code:: sh
 
-         audiodotturn create --dump --filename [filename] [directory]
+         audiodotturn create -D --filename [filename] --directory [directory]
 
 This will create a JSON file with information about your formatted
-files.
+files. If directory is not set then config directory path will be used,
+default is set to current working directory.
 
 Viewing information
 -------------------
@@ -227,13 +248,13 @@ command. There are two options for viewing information:
 
 .. code:: sh
 
-         audiodotturn view --data [datafile] artists --names
+         audiodotturn view -d [datafile] artists -n
 
 This will display a list of all artists in the dataset.
 
 .. code:: sh
 
-         audiodotturn view --data [datafile] artists --tracks
+         audiodotturn view -d [datafile] artists -t
 
 This will display a list of all artists in the dataset along with their
 tracks.
@@ -242,19 +263,19 @@ tracks.
 
 .. code:: sh
 
-         audiodotturn view --data [datafile] songs --artist [artist name]
+         audiodotturn view -d [datafile] songs -a [artist name]
 
 This will display a list of all songs by the specified artist.
 
 .. code:: sh
 
-         audiodotturn view --data [datafile] songs --id [youtube ID]
+         audiodotturn view -d [datafile] songs -i [youtube ID]
 
 This will display a list of all songs with the specified youtube ID.
 
 .. code:: sh
 
-         audiodotturn view --data [datafile] songs --name [track name]
+         audiodotturn view -d [datafile] songs -N [track name]
 
 This will display a list of all songs with the specified track name.
 
@@ -289,6 +310,8 @@ File formatting examples
 -  ``Zacari (adasdasdasd) ft. Isaiah Rashad [misc misc] - Bliss (Official Audio) [audio] [9o1gLWxHI7Q].mp3``
    formats as
    ``[Zacari][Bliss][Isaiah Rashad][adasdasdasd, Official Audio, misc misc, audio][9o1gLWxHI7Q].mp3``
+
+U+ff02 is recognized if the filename contains it
 
 -  ``ZillaKami x SosMula ＂33rd Blakk Glass＂(WSHH Exclusive - testing) [9o1gLWxHI7Q].mp3``
    formats as
@@ -341,7 +364,7 @@ Use at your own risk.
 Roadmap
 =======
 
--  Allow to confirm/deny filename changes
+-  Allow to confirm/deny filename changes, currently adding ``--dry`` before any ``set`` or ``create`` functions is recommended.
 -  General regex adjusting for broader use
 -  Refactoring code for better readability and maintainability
 -  Bug fixes and optimization

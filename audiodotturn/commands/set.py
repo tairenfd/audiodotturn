@@ -3,6 +3,7 @@ import json
 from rich.json import JSON
 from rich.prompt import Confirm
 from audiodotturn.config import Config
+from audiodotturn.errors import error_handler
 
 
 class Set(Config):
@@ -69,91 +70,134 @@ class Set(Config):
                     else:
                         self.console.log(f"\n[green]Success! Defaults saved in {self.config_path}!")
             except IOError as error:
-                self.console.log(f"\n[red]No settings were updated. Error: {error}")
+                self.console.log("\n[red]No settings were updated.\n")
+                error_handler(self.error_msg, self.console, error)
+
 
 
     def write_config(self, dry: bool) -> None:
         """
         Writes the current configuration data to the JSON file. If dry is True, prints the hypothetical
         changes without actually writing them to the file.
+
+        args:
+        - dry: bool flag for dry run
         """
         if dry:
             self.console.log("\n\n[yellow]DRY RUN MODE. NO CHANGES WILL BE WRITTEN TO THE CONFIG FILE.[/yellow]\n\n" + "Hypothetical config created:\n\n" + json.dumps(self.defaults, indent=4))
             return
-        
-        with open(self.config_path, "w", encoding='utf-8') as conf:
-            json.dump(self.defaults, conf, indent=4)
+        try:
+            with open(self.config_path, "w", encoding='utf-8') as conf:
+                json.dump(self.defaults, conf, indent=4)
+        except IOError as error:
+            error_handler(self.error_msg, self.console, error)
         
         self.console.log("\n\n[green]CHANGES SAVED TO THE CONFIG FILE.[/green]")
 
     def set_artist(self, new_artist: str) -> None:
         """
         Sets the default value for artist.
+
+        args:
+        - new_artist: string to use as default unknown artist format
         """
         self.defaults["settings"]["formatting_defaults"]["artist"] = new_artist
 
     def set_title(self, new_title: str) -> None:
         """
         Sets the default value for title.
+    
+        args:
+        - new_title: string to use as default unknown title format
         """
         self.defaults["settings"]["formatting_defaults"]["title"] = new_title
 
     def set_features(self, new_features: str) -> None:
         """
         Sets the default value for features.
+
+        args:
+        - new_features: string to use as default unknown features format
         """
         self.defaults["settings"]["formatting_defaults"]["features"] = new_features
 
     def set_misc(self, new_misc: str) -> None:
         """
         Sets the default value for misc.
+
+        args:
+        - new_misc: string to use as default unknown misc format
         """
         self.defaults["settings"]["formatting_defaults"]["misc"] = new_misc
 
     def set_youtube_id(self, new_youtube_id: str) -> None:
         """
-        Sets the default value for YouTube IDa.
+        Sets the default value for YouTube ID.
+
+        args:
+        - new_youtube_id: string to use as default unknown youtube_id format
         """
         self.defaults["settings"]["formatting_defaults"]["youtube_id"] = new_youtube_id
 
     def set_filetype(self, new_filetype: str) -> None:
         """
         Sets the filetype in the configuration data.
+
+        args:
+        - new_filetype: string to use as default unknown filetype format
         """
         self.defaults["settings"]["formatting_defaults"]["filetype"] = new_filetype
 
     def set_dry_set(self, new_dry_set: bool) -> None:
         """
         Sets the dry flag in the program defaults in the configuration data.
+
+        args:
+        - new_dry_set: string with value corresponding to the default dry run status
         """
         self.defaults["settings"]["program_defaults"]["dry"] = new_dry_set
 
     def set_filename(self, new_filename: str) -> None:
         """
         Sets the filename in the program defaults in the configuration data.
+
+        args:
+        - new_filename: string with value corresponding to the default json filename
         """
         self.defaults["settings"]["program_defaults"]["filename"] = new_filename
 
     def set_directory(self, new_directory: str) -> None:
         """
         Sets the directory in the program defaults in the configuration data.
+
+        args:
+        - new_directory: string with value corresponding to the default working directory
         """
         self.defaults["settings"]["program_defaults"]["directory"] = new_directory
 
     def set_formatter(self, new_formatter: str) -> None:
         """
         Sets the formatter in the program defaults in the configuration data.
+
+        args:
+        - new_formatter: string with value corresponding to an avaliable formatter
         """
         self.defaults["settings"]["program_defaults"]["formatter"] = new_formatter
 
     def set_error_msg(self, new_error_msg: str) -> None:
         """
         Sets the error message in the program defaults in the configuration data.
+        
+        args:
+        - new_error_msg: string formatted as 'option | option | option' with error message formats you'd like audiodotturn to display
         """
         self.defaults["settings"]["program_defaults"]["error_msg"] = new_error_msg
 
     def set_exts(self, new_exts: str) -> None:
         """
         Sets the extensions in the program defaults in the configuration data.
+        
+        args:
+        - new_exts: string formatted as '.ext1, .ext2, .ext3' with extensions you'd like audiodotturn to format
         """
         self.defaults["settings"]["program_defaults"]["exts"] = new_exts

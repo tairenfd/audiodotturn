@@ -18,9 +18,12 @@ import pkg_resources
 console = Console()
 # Check common configuration paths
 ADT_CONFIG_PATH = [
-    os.path.expanduser("~/.config/audiodotturn/config.json"),
-    "/usr/local/etc/audiodotturn/config.json",
-    "/etc/audiodotturn/config.json",
+    os.path.expanduser("~/.config/audiodotturn/adt_config.json"),
+    os.path.expanduser("~/config/audiodotturn/adt_config.json"),
+    os.path.expanduser("~/audiodotturn/adt_config.json"),
+    os.path.expanduser("~/adt_config.json"),
+    "/usr/local/etc/audiodotturn/adt_config.json",
+    "/etc/audiodotturn/adt_config.json",
 ]
 
 CONFIG_PATH = None
@@ -31,7 +34,7 @@ for path in ADT_CONFIG_PATH:
         break
 
 if not CONFIG_PATH:
-    console.log('[bold red]Config not found, falling back to default config.')
+    console.log('[bold yellow]User config not found, falling back to default config.')
     CONFIG_PATH = pkg_resources.resource_filename(__name__, "config.json")
     if not CONFIG_PATH:
         console.log('[bold red]Error loading default config.')

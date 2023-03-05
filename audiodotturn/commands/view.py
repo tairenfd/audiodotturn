@@ -3,6 +3,7 @@ import json
 import argparse
 from rich.markdown import Markdown
 from audiodotturn.config import Config
+from audiodotturn.errors import error_handler
 
 
 class View(Config):
@@ -13,6 +14,7 @@ class View(Config):
         self.args = args
         # get defaults
         super().__init__()
+        self.msg = ''
         # set user defined args
         if self.args.view_command == 'songs':
             self.artist = self.args.artist if self.args.artist else ''
@@ -22,9 +24,9 @@ class View(Config):
         try:
             with open(os.path.join(self.args.data), 'r', encoding='utf-8') as f:
                 self.dataset = json.load(f, object_hook=dict)
-        except Exception as error:
+        except IOError as error:
             self.dataset = {}
-            self.args.view_command = f'/f"{self.error_msg}"'
+            error_handler(self.error_msg, self.console, error)
 
     # view command runner
     def run(self) -> None:
@@ -61,6 +63,9 @@ class View(Config):
 
     # View - artists commands
     def get_artists(self) -> str:
+        """
+        Returns a formatted string containing a list of all artists in the dataset.
+        """        
         # get list of all artists in dataset
         artists_list = []
         for artist in self.dataset:
@@ -70,7 +75,7 @@ class View(Config):
 
     def get_artists_tracks(self) -> str:
         """
-        Returns a formatted string containing a list of all artists in the dataset.
+        Returns a formatted string containing a list of all the artists and their songs in the dataset.
         """
         # get list of all artists and their tracks in dataset
         artists_list = []
@@ -90,7 +95,7 @@ class View(Config):
     # View - songs commands
     def get_songs_by_artist(self) -> str:
         """
-        Returns a formatted string containing a list of all the artists and their songs in the dataset.
+        Returns a formatted string containing a list of all songs by a specified artist in the dataset.
         """
         # get list of all songs by an artist (will search by substring) name in dataset
         artists_list = []

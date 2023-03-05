@@ -2,6 +2,7 @@ import json
 from rich.console import Console
 from rich.table import Table
 from audiodotturn.config.config_path import CONFIG_PATH
+from audiodotturn.errors import error_handler
 
 class Config:
     """
@@ -32,11 +33,12 @@ class Config:
                 self.filename = self.settings["program_defaults"]["filename"]
                 self.directory = self.settings["program_defaults"]["directory"]
                 self.formatter = self.settings["program_defaults"]["formatter"]
-                self.error_msg = self.settings["program_defaults"]["error_msg"]
-                self.exts = tuple(self.settings["program_defaults"]["exts"].split(", "))
+                self.error_msg = self.settings["program_defaults"]["error_msg"].replace(' ', '').split('|')
+                self.exts = tuple(self.settings["program_defaults"]["exts"].replace(' ', '').split(","))
                 self.config_path = CONFIG_PATH
-        except KeyError:
+        except KeyError as error:
             self.console.log('\n[bold red]Config file not configured correctly. Make sure all values are set, refer to the default config or the docs for examples.')
+            error_handler(self.error_msg, self.console, error)
 
     def display_all(self) -> None:
         """

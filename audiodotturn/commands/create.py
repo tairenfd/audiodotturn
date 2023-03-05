@@ -7,11 +7,14 @@ from rich.tree import Tree
 from rich.json import JSON
 from rich.markdown import Markdown
 from audiodotturn.config import Config
+from audiodotturn.errors import error_handler
+
 
 class Create(Config):
     """
     Class that provides functionality for creating formatted files, directories and JSON data.
     """
+
     def __init__(self, args: argparse.Namespace):
         """
         Initialize the Create class object.
@@ -30,6 +33,7 @@ class Create(Config):
         self.filename = self.args.filename
         self.directory = self.args.directory
         self.formatter = self.args.formatter.lower().strip()
+        self.msg = None
 
     # create runner
     def run(self) -> None:
@@ -51,7 +55,7 @@ class Create(Config):
             elif self.args.formatdir:
                 self.msg = self.format_files_dir()
             elif self.args.dump:
-                tree = Tree('DUMP')
+                tree = Tree("DUMP")
                 dump = self.json_dump()
                 if type(dump) is tuple:
                     tree.add("[green]Runtime Info").add(JSON(dump[0]), highlight=True)
@@ -64,7 +68,9 @@ class Create(Config):
 
     # check whether a file is formatted, unable to be formatted, or
     # unchanged due to already being formatted or an incompatible extension
-    def form_or_not(self, files_list: list) -> tuple[list[str], list[str], list[str], list[str]]:
+    def form_or_not(
+        self, files_list: list
+    ) -> tuple[list[str], list[str], list[str], list[str]]:
         """
         Check whether a file is formatted, unable to be formatted, or unchanged due to already being formatted or an incompatible extension.
 
@@ -132,9 +138,10 @@ class Create(Config):
                         shutil.move(
                             f"{self.directory}/{filename}", f"{artist_dir}/{filename}"
                         )
-                    except:
-                        self.console.log(f"{self.directory}/{filename} unsuccesful move to {artist_dir}/{filename}")
-                        pass
+                    except FileExistsError:
+                        self.console.log(
+                            f"{self.directory}/{filename} unsuccesful move to {artist_dir}/{filename}"
+                        )
         return (
             f"### Organized {len(files)} files for {len(artists)} artists.\n"
             + "#### Created directories:\n"
@@ -163,8 +170,8 @@ class Create(Config):
                 files_list
             )
             return "\n".join(formatted + not_formatted + already_formatted + stats)
-        except Exception as error:
-            return f"{error}"
+        except (TypeError, FileNotFoundError) as error:
+            error_handler(self.error_msg, self.console, error)
 
     # file argument really only used by format_files_dir, otherwise will use self.filename
     def format_file(self, file: str = None) -> str:
@@ -197,8 +204,8 @@ class Create(Config):
 
     def json_dump(self) -> str | tuple[str, str]:
         """
-        Finds all properly formatted files in the directory specified in the class and writes the resulting data to a JSON file. 
-        If dry-run is enabled, does not actually write the file, but instead returns a string representation of the data that 
+        Finds all properly formatted files in the directory specified in the class and writes the resulting data to a JSON file.
+        If dry-run is enabled, does not actually write the file, but instead returns a string representation of the data that
         would have been written to the file. Returns a tuple of two strings in this case.
 
         Returns:
@@ -213,6 +220,7 @@ class Create(Config):
                         "Status": "FAILED",
                         "Final": f"Data has FAILED to be dumped into {self.filename}.",
                         "Reason": f"Directory path '{self.directory}' not found.",
+                        "Possible solution": "Ensure the directory exists and its path is correct."
                     }
                 }
             )
@@ -269,6 +277,7 @@ class Create(Config):
                         "Status": "FAILED",
                         "Final": f"Data has FAILED to be dumped into {self.filename}.",
                         "Reason": "No data available. Most likely cause is having no formatted files available in directory.",
+                        "Possible solutions": "Check and make sure you have properly formatted filenames, audiodotturn will ignore unformatted files during the data dump."
                     }
                 }
             )
@@ -276,7 +285,7 @@ class Create(Config):
         # if not a dry run then create the json dump in the given location
         # otherwise just print it
         if not self.dry:
-            with open(os.path.join(self.filename), "w", encoding='utf-8') as f:
+            with open(os.path.join(self.filename), "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
             return json.dumps(
                 {
@@ -308,10 +317,10 @@ class Create(Config):
 
         The method checks for existing data in the filename and fills in missing data with defaults
         specified in the configuration file.
-        
+
         Args:
         - file (str): The name of the file to be formatted.
-        
+
         Returns:
         - str: The formatted filename string.
         """
@@ -371,23 +380,15 @@ class Create(Config):
             if any(features):
                 self.features = []
                 if features_1:
-                    self.features.append(
-                        features_1.group(1).strip()
-                    )
-                
+                    self.features.append(features_1.group(1).strip())
+
                 if features_2:
-                    self.features.append(
-                        features_2.group(2).strip()
-                    ) 
+                    self.features.append(features_2.group(2).strip())
                 if features_3:
-                    self.features.append(
-                        features_3.group(1).strip()
-                    ) 
+                    self.features.append(features_3.group(1).strip())
 
                 if features_4:
-                    self.features.append(
-                        features_4.group(2).strip()
-                    )
+                    self.features.append(features_4.group(2).strip())
 
                 self.features = ", ".join(self.features).replace("'", "")
 
@@ -439,10 +440,10 @@ class Create(Config):
 
         The method checks for existing data in the filename and fills in missing data with defaults
         specified in the configuration file.
-        
+
         Args:
         - file (str): The name of the file to be formatted.
-        
+
         Returns:
         - str: The formatted filename string.
         """
@@ -502,23 +503,15 @@ class Create(Config):
             if any(features):
                 self.features = []
                 if features_1:
-                    self.features.append(
-                        features_1.group(1).strip()
-                    )
-                
+                    self.features.append(features_1.group(1).strip())
+
                 if features_2:
-                    self.features.append(
-                        features_2.group(2).strip()
-                    ) 
+                    self.features.append(features_2.group(2).strip())
                 if features_3:
-                    self.features.append(
-                        features_3.group(1).strip()
-                    ) 
+                    self.features.append(features_3.group(1).strip())
 
                 if features_4:
-                    self.features.append(
-                        features_4.group(2).strip()
-                    )
+                    self.features.append(features_4.group(2).strip())
 
                 self.features = ", ".join(self.features).replace("'", "")
 

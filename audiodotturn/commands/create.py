@@ -197,7 +197,7 @@ class Create(Config):
         # if not a dry-run, set the new file name
         if self.filename != new_file and not self.dry:
             os.rename(
-                self.directory + "/" + self.filename, self.directory + "/" + new_file
+                self.directory + "/" + self.filename, self.directory + "/" + new_file.lstrip('*$')
             )
 
         return new_file

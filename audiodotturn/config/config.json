@@ -1,6 +1,6 @@
 {
     "settings": {
-        "formatting_defaults": {
+        "formatting": {
             "artist": "UNKNOWN",
             "title": "UNKNOWN",
             "features": "UNKNOWN",
@@ -8,21 +8,36 @@
             "youtube_id": "UNKNOWN",
             "filetype": "mp3"
         },
-        "program_defaults": {
-            "dry": "False",
-            "error_msg": "error",
-            "filename": "data.json",
-            "formatter": "standard",
+        "program": {
+            "dry": "false",
+            "database": "music_catalog.db",
             "directory": ".",
-            "exts": ".mp3, .mp4, .wav, .m4a, .wma, .aac, .fla, .webm, .ogg, .opus, .flv"
+            "extractor": "standard",
+            "constructor": "simple",
+            "error_msg": [
+                "error"
+            ],
+            "exts": [
+                ".mp3",
+                ".mp4",
+                ".wav",
+                ".m4a",
+                ".wma",
+                ".aac",
+                ".fla",
+                ".webm",
+                ".ogg",
+                ".opus",
+                ".flv"
+            ]
         }
     },
     "options": {
-        "formatting_defaults": {
+        "formatting": {
             "description": "These attributes are used to format the filename when no information is available, and can generally be set to whatever you'd like.",
             "all": "Takes in a string"
         },
-        "program_defaults": {
+        "program": {
             "dry": {
                 "description": "When True, the program will perform a dry run and not make any changes to the system or file structure. Defaults to False.",
                 "options": {
@@ -31,22 +46,32 @@
                 }
             },
             "error_msg": {
-                "description": "This is the error message that will be displayed if there is an issue with the program. multiple options can be used by seperating them with '|', ie 'error | traceback'.",
+                "description":
+                    "error message that will be displayed during Exceptions. Multiple options can be used. Add them to the error_msg list or add with the set command",
                 "options": {
                     "error": "Default error message",
-                    "traceback": "Error message with traceback added",
-                    "<custom>": "Custom error message string, add color with [<color>], for more info check out the 'rich' project docs"
+                    "warning": "Non-critical issue that may affect program functionality.",
+                    "info": "Informational message for user.",
+                    "traceback": "Detailed error information for debugging.",
+                    "custom": "Custom error message defined by the user, add color with [<color>], for more info check out the 'rich' project docs."
                 }
             },
-            "filename": {
-                "description": "This is the default filename for the JSON file used during dataset creation.",
+            "database": {
+                "description": "This is the default path for the libraries database.",
                 "options": "Any filename ending in .json."
             },
-            "formatter": {
-                "description": "This is the formatter used to format the filename. There are two options: 'standard' and 'youtube'.",
+            "extractor": {
+                "description": "This is the extractor used to extract the filename data as a dict. There are two options: 'standard' and 'youtube'.",
                 "options": {
-                    "standard": "This formatter will format the filename using artist, title, features and misc as data settings.",
-                    "youtube": "This formatter will format the filename using artist, title, features, misc and youtube_id as data settings."
+                    "standard": "This extractor will extract the filename using artist, title, features and misc as data settings.",
+                    "youtube": "This extractor will extract the filename using artist, title, features, misc and youtube_id as data settings."
+                }
+            },
+            "constructor": {
+                "description": "Construct a formatted file name using a dict of values pulled from extractor, stylized by the constructor.",
+                "options": {
+                    "simple": "artist - title ft. features (misc).ext",
+                    "blocks": "[artist][title][features][misc][ext]"
                 }
             },
             "directory": {

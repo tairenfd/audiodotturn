@@ -1,55 +1,21 @@
-AudioDotTurn 0.3.5
-===================
+audiodotturn 0.4.0
+==================
 
 .. image:: https://img.shields.io/pypi/v/audiodotturn.svg
     :target: https://pypi.org/project/audiodotturn/
 
-If you're tired of your audio files being a complete mess with poorly
-formatted names and missing metadata this might be your solution.
+AudioDotTurn is a tool for formatting and organizing audio files with little to no metadata available. It provides a solution
+for situations where there are tons of unstandardized, unorganized files with little to no metadata, and sorting via metadata
+is not an option. With AudioDotTurn, users can quickly format a single file or a whole directory/subdirectories to the style of
+their choosing. 
 
-Using audiodotturn you can quickly and easily organize your entire audio
-library with just a few commands.
+The tool creates a database for the user, which can be accessed via AudioDotTurn or any program that will interpret sql .db files.
+The database will be updated as new files are formatted as long as the db file is selected as the default db or selected at runtime.
 
-The project initially began due to a dumb mistake by myself where I
-downloaded over 3000+ songs with yt-dlp with no proper formatting or
-metadata included.
-
-Table of Contents
-=================
-
--  `Installation <#installation>`__
--  `Dependencies <#dependencies>`__
--  `Usage <#usage>`__
-
-   -  `Flags and positional
-      arguments <#flags-and-positional-arguments>`__
-   -  `Choosing a formatter <#choosing-a-formatter>`__
-   -  `Creating a dataset <#creating-a-dataset>`__
-   -  `Viewing information <#viewing-information>`__
-
--  `Examples <#examples>`__
-
-   -  `File formatting examples <#file-formatting-examples>`__
-   -  `Example dataset <#example-dataset>`__
-
--  `Disclaimer <#disclaimer>`__
--  `Roadmap <#roadmap>`__
--  `License <#license>`__
-
-Installation
-============
-
-.. code:: sh
-
-	 pip install audiodotturn
-
-Or install from source with
-
-.. code:: sh
-
-	 git clone https://github.com/tairenfd/audiodotturn.git
-	 cd audiodotturn
-	 pip install .
+- Users can change settings via CLI
+- AudioDotTurn uses pretty output via rich for visually appealing output
+- Dry run mode available for seeing results of a run without making any actual changes
+- When formatting an entire directory, users can produce a report of the results in an MD file or simply print them to the console if either are desired.
 
 Set User Config
 ===============
@@ -77,6 +43,8 @@ Once the default config is found, copy it to one of the below paths with `cp <DE
 Once copied rename the config file to adt_config.json and change any desired settings, if the config warning is no longer showing up,
 then your new config has loaded properly.
 
+A config can also be set at runtime with the `-c` flag
+
 Dependencies
 ============
 
@@ -92,266 +60,34 @@ Standard:
 	- argparse 
 	- shutil
 
-Usage
-=====
-
-AudioDotTurn has two main commands for interacting with the music library: ``create`` and ``view``.
-
-The ``create`` command allows you to format and/or organize your files,
-while the ``view`` command allows you to view information about your
-existing data.
-
-There is however a third positional argument, ``set``.
-
-The ``set`` command can also be used to set default values. It will have
-you confirm or deny any changes to ensure safety. Multiple values can be
-changed at once.
-
-Flags and positional arguments
-------------------------------
-
-.. code:: sh
-
-       usage: AudioDotTurn.py [-h] {create,view} ...
-
-       Format, orgranize and retrieve data from files in an audio library.
-
-       positional arguments:
-         {set,create,view}  commands
-           set          Set default settings
-           create       Create subcommands
-           view         View subcommands
-
-       optional arguments:
-         --defaults                                     Show default settings
-         --defaults [{program, format, options, all}]   Show default settings
-         -h, --help                                     Show this help message and exit
-
-       Set subcommands:
-         --artist        ARTIST 
-         --title         TITLE
-         --features      FEATURES 
-         --misc          MISC 
-         --youtube_id    YOUTUBE_ID 
-         --filetype      FILETYPE 
-         --dry           BOOL
-         --filename      FILENAME
-         --directory     PATH
-         --formatter     FORMATTER
-         --error_msg     STRING       Seperate options with '|'   
-         --exts          STRING       Seperate options with ','
-
-       Create subcommands:
-         -d, --dirs                    Organize files in artist directories
-         -x. --formatter  FORMATTER    Define the formatter to use
-         -f, --formatfile FORMATFILE   Format single file
-         -F, --formatdir               Format all files in directory
-         -D, --dump                    Dump directory into JSON file
-         --filename FILENAME           Name of JSON file
-         --directory DIR               Directory to organize or format files
-         --dry                         Dry run
-
-       View subcommands:
-         -d DATA             JSON data to view
-
-         View Artists:
-           artists             View list of artists
-             -t, --tracks      View list of artists and their tracks
-             -n, --names       View list of artist names
-
-         View Songs:
-           songs               View list of songs
-             -a ARTIST         View list of songs by artist
-             -i ID             View list of songs by ID
-             -N NAME           View list of songs by name
-
 Choosing a formatter
---------------------
+====================
 
-The default formatter is now the ``standard`` formatter which applies no
-youtube_id data attribute but otherwise works the same. It will still
-read formatted files with a youtube_id fine when creating a json, but
-will not create new datasets with youtube_id's - instead putting that
-info if provided into the ``misc`` category. This is the recommended
-formatter for general use.
+TODO
 
-The ``youtube`` formatter is primarily for files downloaded with yt-dlp
-that still contain a suffix of [youtube_id].ext
+Currently standard formatter will always be ran. It should format most files fairly well.
 
-You can set a default formatter in the config.json file, or set it
-during runtime with ``-x [formatter]``
+Choosing a constructor
+======================
 
-To view the currently set default formatter use
-``audiodotturn --defaults settings`` 
+TODO: explain
 
-- default formatter listed under ``program defaults -> formatter``
+- "simple":
+- "block":
 
-You can view the available formatters with
-``audiodotturn --defaults options`` 
+Creating a database
+===================
 
-- options will be under ``program options -> formatter``
+Database path is set in config or during runtime.
 
-Creating a dataset
-------------------
+A new database will be created if one isnt already when running the create or view commands.
+Populate the database by using the format file or format directory commands, this will update
+a database as well. I recommend doing this with dry run if you just want to create a database
+without formatting any files.
 
-To create a dataset, you first need to format your filenames. There are
-three options for formatting filenames:
+.. include:: USAGE.rst
 
-1. **Format a single file:**
-
-.. code:: sh
-
-         audiodotturn create -f [filename]
-
-This will format the filename using the default format.
-
-If your file doesn't follow this format, the tool will attempt to format
-it as best it can. You can also specify a custom format using the
-``--format`` option.
-
-2. **Format all files in a directory:**
-
-.. code:: sh
-
-         audiodotturn create -F [directory]
-
-This will format all files in the specified directory using the default
-format.
-
-3. **Organize files into artist directories:**
-
-.. code:: sh
-
-         audiodotturn create -d [directory]
-
-This will organize all files in the specified directory into artist
-directories based on the artist names in the filenames.
-
-After formatting your filenames, you can create a dataset using the
-``--dump`` option:
-
-.. code:: sh
-
-         audiodotturn create -D --filename [filename] --directory [directory]
-
-This will create a JSON file with information about your formatted
-files. If directory is not set then config directory path will be used,
-default is set to current working directory.
-
-Viewing information
--------------------
-
-To view information about your dataset, you can use the ``view``
-command. There are two options for viewing information:
-
-1. **View a list of artists:**
-
-.. code:: sh
-
-         audiodotturn view -d [datafile] artists -n
-
-This will display a list of all artists in the dataset.
-
-.. code:: sh
-
-         audiodotturn view -d [datafile] artists -t
-
-This will display a list of all artists in the dataset along with their
-tracks.
-
-2. **View a list of songs:**
-
-.. code:: sh
-
-         audiodotturn view -d [datafile] songs -a [artist name]
-
-This will display a list of all songs by the specified artist.
-
-.. code:: sh
-
-         audiodotturn view -d [datafile] songs -i [youtube ID]
-
-This will display a list of all songs with the specified youtube ID.
-
-.. code:: sh
-
-         audiodotturn view -d [datafile] songs -N [track name]
-
-This will display a list of all songs with the specified track name.
-
-Examples
-========
-
-File formatting examples
-------------------------
-
--  Note: The below are only examples using the ‘youtube’ formatter. More
-   examples will be added soon.
-
--  ``[YG Feat. Dj Mustard "Pop It, Shake It" (Uncut) (WSHH Exclusive - Official Music Video) [kQ2KSPz4iSw].wav]``
-   formats as
-   ``[YG][Pop It, Shake It][Dj Mustard][Uncut, WSHH Exclusive - Official Music Video][kQ2KSPz4iSw].wav``
-
--  ``[The Weeknd - Blinding Lights (Lyrics) [4NRXx6U8ABQ].mp3]`` formats
-   as
-   ``[The Weeknd][Blinding Lights][UNKNOWN][Lyrics][4NRXx6U8ABQ].mp3``
-
--  ``[Lady Gaga, Ariana Grande - Rain On Me (Official Music Video) [AOm9Fv8NTG0].mp3]``
-   formats as
-   ``[Lady Gaga, Ariana Grande][Rain On Me][UNKNOWN][Official Music Video][AOm9Fv8NTG0].mp3``
-
--  ``[Music for Sleeping and Deep Relaxation: Delta Waves [HU3ZGMaVZj0].mp4]``
-   formats as
-   ``[Music for Sleeping and Deep Relaxation][Delta Waves][UNKNOWN][UNKNOWN][HU3ZGMaVZj0].mp4``
-
--  ``[Music [HU3ZGMaVZj0].mp4]`` formats as
-   ``[Music][UNKNOWN][UNKNOWN][UNKNOWN][HU3ZGMaVZj0].mp4``
-
--  ``Zacari (adasdasdasd) ft. Isaiah Rashad [misc misc] - Bliss (Official Audio) [audio] [9o1gLWxHI7Q].mp3``
-   formats as
-   ``[Zacari][Bliss][Isaiah Rashad][adasdasdasd, Official Audio, misc misc, audio][9o1gLWxHI7Q].mp3``
-
-U+ff02 is recognized if the filename contains it
-
--  ``ZillaKami x SosMula ＂33rd Blakk Glass＂(WSHH Exclusive - testing) [9o1gLWxHI7Q].mp3``
-   formats as
-   ``[ZillaKami x SosMula][33rd Blakk Glass][UNKNOWN][WSHH Exclusive - testing][9o1gLWxHI7Q].mp3``
-
-Example dataset
----------------
-
-.. code:: json
-
-     {
-       "Koly P": {
-         "tracks": [
-           {
-             "title": "Rapture Of Thugs",
-             "features": "Polo pooh",
-             "misc": "KOLYON",
-             "youtube_id": "xZEK6luuZ2k",
-             "filetype": "mp3"
-           }
-         ]
-       },
-       "Isaiah Rashad": {
-         "tracks": [
-           {
-             "title": "All Herb",
-             "features": "Amindi",
-             "misc": "UNKNOWN",
-             "filetype": "mp3"
-           },
-           {
-             "title": "The Race Freestyle",
-             "features": "UNKNOWN",
-             "misc": "Tay-K",
-             "youtube_id": "Rf4S_44jkAY",
-             "filetype": "mp3"
-           }
-         ]
-       }
-     }
+.. include:: EXAMPLES.rst
 
 Disclaimer
 ==========
@@ -364,9 +100,7 @@ Use at your own risk.
 Roadmap
 =======
 
--  Allow to confirm/deny filename changes, currently adding ``--dry`` before any ``set`` or ``create`` functions is recommended.
 -  General regex adjusting for broader use
--  Refactoring code for better readability and maintainability
 -  Bug fixes and optimization
 
 License
@@ -376,4 +110,3 @@ License
    :alt: MIT
 
 This project is licensed under the MIT License. See the LICENSE file for
-more information.

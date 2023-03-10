@@ -1,2 +1,2 @@
-from audiodotturn.config.config import Config, defaults
-from audiodotturn.config.config_path import CONFIG_PATH
+from audiodotturn.config.config import Config, ConfigPath
+from audiodotturn.config.config_manage import ConfigManager

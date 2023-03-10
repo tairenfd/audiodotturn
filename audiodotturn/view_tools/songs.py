@@ -7,7 +7,7 @@ class Song:
     A class that provides functionality for viewing the list of songs.
 
     Args:
-        conn (sqlite3.Connection): a connection to the SQLite database
+        cursor (sqlite3.Connection.cursor): a SQLite database cursor
         query (str): search query
     """
     def __init__(self, cursor: sqlite3.Connection.cursor):

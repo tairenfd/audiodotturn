@@ -1,9 +1,6 @@
 audiodotturn 0.4.0
 ==================
 
-.. image:: https://img.shields.io/pypi/v/audiodotturn.svg
-    :target: https://pypi.org/project/audiodotturn/
-
 AudioDotTurn is a tool for formatting and organizing audio files with little to no metadata available. It provides a solution
 for situations where there are tons of unstandardized, unorganized files with little to no metadata, and sorting via metadata
 is not an option. With AudioDotTurn, users can quickly format a single file or a whole directory/subdirectories to the style of
@@ -84,10 +81,6 @@ A new database will be created if one isnt already when running the create or vi
 Populate the database by using the format file or format directory commands, this will update
 a database as well. I recommend doing this with dry run if you just want to create a database
 without formatting any files.
-
-.. include:: USAGE.rst
-
-.. include:: EXAMPLES.rst
 
 Disclaimer
 ==========

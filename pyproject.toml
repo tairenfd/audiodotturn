@@ -8,7 +8,6 @@ description = 'A tool for formatting and organizing music files, mainly for file
 authors = [
     {name = "tairenfd", email = "tairenfd@mailbox.org"},
 ]
-readme = "README.rst"
 license = {file = "LICENSE"}
 keywords = [
     'audio',
@@ -36,7 +35,7 @@ classifiers = [
     'Topic :: Utilities'
 ]
 
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 
 [project.urls]
 homepage = "https://audiodotturn.tairenfd.xyz"
@@ -58,6 +57,7 @@ docs = [
 
 [tool.setuptools.dynamic]
 version = {attr = "audiodotturn.__version__"}
+readme = {file = ["README.rst", "USAGE.rst"]}
 
 [tool.setuptools]
 include-package-data = true

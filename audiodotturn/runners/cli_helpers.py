@@ -197,12 +197,12 @@ class Creator:
         with config.console.status("[bold green]Constructing..."):
             options = constructor.run()
 
-        if status or status is None and not dirs:
-            if config.program_defaults.dry and not dirs:
+        if status and not dirs or status is None and not dirs:
+            if config.program_defaults.dry:
                 confirmed = Confirm.ask(prompt="\n[bold white]Construction successful! You're in dry run mode, would you like to update the database anyways?\n", console=config.console).__bool__()
                 if confirmed:
                     database.add_data_to_db(extracted_data)
-            elif not config.program_defaults.dry and not dirs:
+            elif not config.program_defaults.dry:
                 confirmed = Confirm.ask(prompt="\n[bold white]Construction successful! Add the track data to the database?\n", console=config.console).__bool__()
                 if confirmed:
                     database.add_data_to_db(extracted_data)
@@ -211,7 +211,10 @@ class Creator:
             database.add_data_to_db(extracted_data)
 
         # multifile, autoselects final option in list - contains most info
+
         if status and dirs:
+            if file == options[-1]:
+                status = None
             return (options[-1], status)
         elif status is None and dirs:
             return (file, status)
@@ -292,13 +295,12 @@ class Creator:
             config.program_defaults.dry = True
 
         files = set()
+        exists = set()
         created = []
         artist_dir = ""
 
-        for artist in artists:
-            artist_dir = os.path.join(audio_dir, artist.replace(' ',''))
-                
-            for filename in os.listdir(audio_dir):
+        for filename in os.listdir(audio_dir):
+            for artist in artists:
                 if filename.endswith(tuple(config.program_defaults.exts)):
                     match = re.match(
                         r"\[(.+?)\].*$", filename
@@ -308,28 +310,33 @@ class Creator:
                             r"(.+?) -.*$", filename
                         )
                     if match:
-                        artist = match.group(1)
-                        files.add((artist, filename))
-                        artist_dir = os.path.join(audio_dir, artist.replace(' ','_'))
-                        os.mkdir(artist_dir)
-                        created.append(artist_dir)
-                        print(artist_dir)
+                        try:
+                            if match.group(1) not in artists:
+                                raise TypeError
+                            artist = match.group(1)
+                            artist_dir = os.path.join(audio_dir, artist.replace(' ','_'))
+                            os.mkdir(artist_dir)
+                            created.append(artist_dir)
+                        except (FileExistsError, TypeError):
+                            pass
+
 
                     # if dry run, no files will be moved and no directories created,
                     # the user just get the data of what wouldve been changed if applied
-                    if not config.program_defaults.dry:
-                        print(f"{audio_dir}{filename}", f"{artist_dir}/")
+                    if not config.program_defaults.dry and match:
                         try:
                             shutil.move(
-                                f"{audio_dir}{filename}", f"{artist_dir}/"
+                                f"{audio_dir.strip('/')}/{filename}", f"{artist_dir}/"
                             )
-                        except FileExistsError:
+                            files.add((artist, filename))
+                        except (FileExistsError, shutil.Error, PermissionError):
+                            exists.add(f"{filename} already exists in {audio_dir}, file will not be moved.")
                             pass
 
         if config.program_defaults.dry:
-            config.console.print(f'Would have moved {len(files)} files\n', f'Directories that would have been created in {audio_dir}:\n- {created}')
+            config.console.print(f'Would have moved {len(files)} files\n', f'Directories that would have been created in {audio_dir}:\n- {created if created else None}', f'\n{exists if exists else "Files that already exist in the artist dir will not be moved, they would be listed here. Currently dry run doesnt list these files."}')
         else:
-            config.console.print(f'Moved {len(files)} files\n', f'Directories that have been created in {audio_dir}:\n- {created}')
+            config.console.print(f'Moved {len(files)} files\n', f'Directories that have been created in {audio_dir}:\n- {created if created else None}', f'\n{exists if exists else "Files that already exist in the artist dir will not be moved, they would be listed here. Currently dry run doesnt list these files."}')
 
 
 

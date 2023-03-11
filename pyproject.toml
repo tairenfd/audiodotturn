@@ -31,7 +31,7 @@ classifiers = [
     'License :: OSI Approved :: MIT License',
     'Operating System :: POSIX :: Linux',
     'Environment :: Console',
-    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.11',
     'Topic :: Utilities'
 ]
 

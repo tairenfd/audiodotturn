@@ -311,6 +311,9 @@ class Config:
                 self.program_defaults
             )
 
+            for id, ext in enumerate(self.program_defaults.exts):
+                self.program_defaults.exts[id] = ext.strip()
+
             self.format_options = FormatOptions(self.config["options"]["formatting"])
             self.program_options = ProgramOptions(self.config["options"]["program"])
             self.options = Options(

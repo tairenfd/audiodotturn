@@ -96,14 +96,11 @@ class CLI(Setter, Creator, Options):
 
                 result, status = self.format_file(self.database, self.config, file=self.args.format)
                 if not self.config.defaults.program.dry:
-                    try:
-                        self.rename_file(self.config, old=self.args.format, new=result)
-                        self.config.console.print(Markdown('# FILE RENAMED SUCCESSFULLY'), markup=True, highlight=True)
-                    except IOError as error:
-                        AudiodotturnError(error, tuple(self.config.program_defaults.error_msg), self.config.console)
+                    rename_status = self.rename_file(self.config, old=self.args.format, new=result)
                 if status:
-                    self.config.console.print(Markdown('# RESULT STATUS: SUCCESS'), markup=True, highlight=True)
+                    self.config.console.print(Markdown('# FORMAT RESULT STATUS: SUCCESS'), markup=True, highlight=True)
                     self.config.console.print(Markdown(f'## DRY_RUN\n### OLD: {self.args.format}\n### NEW: {result}'), markup=True, highlight=True)
+                    self.config.console.print(Markdown(f'# RENAME RESULT STATUS: {rename_status}'), markup=True, highlight=True)
 
                 elif status is None:
                     self.config.console.print(Markdown('# RESULT STATUS: NO CHANGE'), markup=True, highlight=True)

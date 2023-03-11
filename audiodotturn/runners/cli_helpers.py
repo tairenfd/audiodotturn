@@ -173,8 +173,10 @@ class Creator:
                         config.unchanged.append(result)
                     elif not status:
                         config.error_fmt.append(result)
-                    else:
-                        config.changed.append(result)
+                    elif status:
+                        if not self.config.defaults.program.dry:
+                                rename_status = self.rename_file(self.config, old=filename, new=result)
+                        config.changed.append(rename_status)
                 else:
                     config.error_fmt.append(filename)
         database.close_db()
@@ -204,7 +206,8 @@ class Creator:
                 confirmed = Confirm.ask(prompt="\n[bold white]Construction successful! Add the track data to the database?\n", console=config.console).__bool__()
                 if confirmed:
                     database.add_data_to_db(extracted_data)
-        elif dir_data and dirs:
+    
+        if dir_data and dirs and (status or status is None):
             database.add_data_to_db(extracted_data)
 
         # multifile, autoselects final option in list - contains most info
@@ -248,14 +251,16 @@ class Creator:
             AudiodotturnError(error, tuple(config.defaults.program.error_msg), config.console, if_exit=True)
 
     def rename_file(self, config: Config, old: str, new: str) -> None:
+        status = f"Unsucessfully renamed {old} to {new}"
         with config.console.status("[bold green]Formatting filename..."):
             try:
                 os.rename(
                     config.defaults.program.directory.rstrip('/') + "/" + old, config.defaults.program.directory.rstrip('/') + "/" + new
                 )
-                config.console.print(f'[magenta]{old} [cyan]has been formatted to [bold green]{new} [cyan]in [green]{config.defaults.program.directory}')
+                status = f'{old} has been formatted to {new} in {config.defaults.program.directory}'
             except (OSError) as error:
                 AudiodotturnError(error, tuple(config.defaults.program.error_msg), config.console, if_exit=True)
+        return status
 
     def organize_by_artist(self, config: Config, database: Database, audio_dir: str) -> None:
         """
@@ -290,40 +295,36 @@ class Creator:
         created = []
         artist_dir = ""
 
-        # Create a directory for each artist
         for artist in artists:
-            print(artist)
-            artist_dir = os.path.join(audio_dir, artist)
-            if not config.program_defaults.dry:
-                try:
-                    os.makedirs(artist_dir, exist_ok=False)
-                except OSError:
-                    pass
-            created.append(artist_dir)
+            artist_dir = os.path.join(audio_dir, artist.replace(' ',''))
                 
-        for filename in os.listdir(audio_dir):
-            if filename.endswith(tuple(config.program_defaults.exts)):
-                match = re.match(
-                    r"\[(.+?)\].*$", filename
-                )
-                if not match:
+            for filename in os.listdir(audio_dir):
+                if filename.endswith(tuple(config.program_defaults.exts)):
                     match = re.match(
-                        r"(.+?) -.*$", filename
+                        r"\[(.+?)\].*$", filename
                     )
-                if match:
-                    artist = match.group(1)
-                    files.add((artist, filename))
-                    artist_dir = f"{audio_dir}/{artist.title()}"
-
-                # if dry run, no files will be moved and no directories created,
-                # the user just get the data of what wouldve been changed if applied
-                if not config.program_defaults.dry:
-                    try:
-                        shutil.move(
-                            f"{audio_dir}/{filename}", f"{artist_dir}/{filename}"
+                    if not match:
+                        match = re.match(
+                            r"(.+?) -.*$", filename
                         )
-                    except FileExistsError:
-                        pass
+                    if match:
+                        artist = match.group(1)
+                        files.add((artist, filename))
+                        artist_dir = os.path.join(audio_dir, artist.replace(' ','_'))
+                        os.mkdir(artist_dir)
+                        created.append(artist_dir)
+                        print(artist_dir)
+
+                    # if dry run, no files will be moved and no directories created,
+                    # the user just get the data of what wouldve been changed if applied
+                    if not config.program_defaults.dry:
+                        print(f"{audio_dir}{filename}", f"{artist_dir}/")
+                        try:
+                            shutil.move(
+                                f"{audio_dir}{filename}", f"{artist_dir}/"
+                            )
+                        except FileExistsError:
+                            pass
 
         if config.program_defaults.dry:
             config.console.print(f'Would have moved {len(files)} files\n', f'Directories that would have been created in {audio_dir}:\n- {created}')

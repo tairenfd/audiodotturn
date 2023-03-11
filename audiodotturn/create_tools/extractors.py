@@ -189,7 +189,7 @@ class StandardExtractor(BaseExtractor):
 
         self.file = file
         check = self.base_extract()
-        if check:
+        if check or check is None:
             return check
 
         # check for track features

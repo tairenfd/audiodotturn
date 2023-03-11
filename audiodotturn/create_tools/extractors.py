@@ -111,10 +111,10 @@ class BaseExtractor:
         if format_check_block:
             return (
                 {
-                    'artist': format_check_block[1].title(),
-                    'title': format_check_block[2],
-                    'features': format_check_block[3],
-                    'misc': format_check_block[4],
+                    'artist': format_check_block[1].strip().title(),
+                    'title': format_check_block[2].strip(),
+                    'features': format_check_block[3].strip().title(),
+                    'misc': format_check_block[4].strip().title(),
                     'youtube_id': format_check_block[5],
                     'filetype': format_check_block[6]
                 },
@@ -123,10 +123,10 @@ class BaseExtractor:
         if format_check_block2:
             return (
                 {
-                    'artist': format_check_block2[1].title(),
-                    'title': format_check_block2[2],
-                    'features': format_check_block2[3],
-                    'misc': format_check_block2[4],
+                    'artist': format_check_block2[1].strip().title(),
+                    'title': format_check_block2[2].strip(),
+                    'features': format_check_block2[3].strip().title(),
+                    'misc': format_check_block2[4].strip().title(),
                     'youtube_id': self.config.format_defaults.youtube_id,
                     'filetype': format_check_block2[5]
                 },
@@ -135,10 +135,10 @@ class BaseExtractor:
         if format_check_block3:
             return (
                 {
-                    'artist': format_check_block3[1].title(),
-                    'title': format_check_block3[2],
-                    'features': format_check_block3[3],
-                    'misc': self.config.format_defaults.misc,
+                    'artist': format_check_block3[1].strip().title(),
+                    'title': format_check_block3[2].strip(),
+                    'features': format_check_block3[3].strip().title(),
+                    'misc': self.config.format_defaults.misc.strip().title(),
                     'youtube_id': self.config.format_defaults.youtube_id,
                     'filetype': format_check_block3[4]
                 },
@@ -154,8 +154,8 @@ class BaseExtractor:
                 {
                     'artist': format_check_standard[1].strip().title(),
                     'title': format_check_standard[2].strip(),
-                    'features': format_check_standard[3].strip(),
-                    'misc': format_check_standard[4].strip(),
+                    'features': format_check_standard[3].strip().title(),
+                    'misc': format_check_standard[4].strip().title(),
                     'filetype': format_check_standard[5].strip()
                 },
                 stat
@@ -301,10 +301,10 @@ class StandardExtractor(BaseExtractor):
 
         # create formatted file name
         return ({
-                'artist': artist.title(),
-                'title': title,
-                'features': features,
-                'misc': misc,
+                'artist': artist.strip().title(),
+                'title': title.strip(),
+                'features': features.strip().title(),
+                'misc': misc.strip().title(),
                 'filetype': filetype
             }, True)
         

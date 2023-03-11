@@ -1,4 +1,4 @@
-audiodotturn 0.4.2
+audiodotturn 0.4.3
 ==================
 
 AudioDotTurn is a tool for formatting and organizing audio files with little to no metadata available. It provides a solution

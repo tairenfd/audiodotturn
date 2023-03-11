@@ -16,4 +16,4 @@ Usage:
 TODO:
 - Add more detailed information regarding how to use AudioDotTurn.
 """
-__version__ = VERSION = '0.4.2'
+__version__ = VERSION = '0.4.3'

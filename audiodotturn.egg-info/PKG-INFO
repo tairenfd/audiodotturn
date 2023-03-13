@@ -1,0 +1,49 @@
+Metadata-Version: 2.1
+Name: audiodotturn
+Version: 0.5.0
+Summary: A tool/library for formatting and cataloging audio files, mainly for files with no metadata.
+Author-email: tairenfd <tairenfd@mailbox.org>
+Project-URL: homepage, https://audiodotturn.tairenfd.xyz
+Project-URL: repository, https://github.com/tairenfd/audiodotturn
+Keywords: audio,music,organizer,metadata,formatter,tagger,manager,cli
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Environment :: Console
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Utilities
+Description-Content-Type: text/x-rst
+
+audiodotturn
+============
+
+General tool/library for extracting simple metadata and producing new file formats from only a filename(s).
+
+Metadata can be catalogued and viewed via a sql database created by audiodotturn
+
+Extraction and construction reports can be generated in multiple file formats. 
+
+INSTALLATION
+------------
+
+```sh
+    pip install audiodotturn
+```
+
+
+
+CONFIGURATION
+-------------
+
+USAGE
+-----
+
+EXAMPLES
+--------
+
+ROADMAP
+-------
+
+LICENSE
+-------

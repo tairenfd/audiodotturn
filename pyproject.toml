@@ -4,11 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = 'audiodotturn'
-description = 'A tool for formatting and organizing music files, mainly for files with no metadata.'
+description = 'A tool/library for formatting and cataloging audio files, mainly for files with no metadata.'
+license = {file = "LICENSE"}
+
 authors = [
     {name = "tairenfd", email = "tairenfd@mailbox.org"},
 ]
-license = {file = "LICENSE"}
+
 keywords = [
     'audio',
     'music',
@@ -19,12 +21,11 @@ keywords = [
     'manager',
     'cli'
 ]
+
 dependencies = [
-    'rich',
-    'markdown-it-py',
-    'mdurl',
-    'Pygments'
+    'pyyaml'
 ]
+
 classifiers = [
     'Development Status :: 3 - Alpha',
     'Intended Audience :: End Users/Desktop',
@@ -35,29 +36,16 @@ classifiers = [
     'Topic :: Utilities'
 ]
 
-dynamic = ["version", "readme"]
+dynamic = ["readme", "version"]
 
 [project.urls]
 homepage = "https://audiodotturn.tairenfd.xyz"
 repository = "https://github.com/tairenfd/audiodotturn"
 
-[project.optional-dependencies]
-docs = [
-    'readthedocs-sphinx-search==0.2.0',
-    'sphinx-automodapi==0.13',
-    'sphinx-rtd-theme==1.1.1',
-    'sphinx_autodoc_typehints==1.22',
-    'sphinxcontrib-applehelp==1.0.4',
-    'sphinxcontrib-devhelp==1.0.2',
-    'sphinxcontrib-htmlhelp==2.0.1',
-    'sphinxcontrib-jsmath==1.0.1',
-    'sphinxcontrib-qthelp==1.0.3',
-    'sphinxcontrib-serializinghtml==1.1.5'
-]
 
 [tool.setuptools.dynamic]
-version = {attr = "audiodotturn.__version__"}
-readme = {file = ["README.rst", "USAGE.rst"]}
+version = {attr = "adt.VERSION"}
+readme = {file = ["README.md"]}
 
 [tool.setuptools]
 include-package-data = true
@@ -66,4 +54,4 @@ include-package-data = true
 find = {}
 
 [project.scripts]
-audiodotturn = 'audiodotturn.runners.cli:main'
+adt = 'adt.run:main'

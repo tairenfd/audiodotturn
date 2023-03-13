@@ -258,8 +258,8 @@ def main():
         elif args.command == "database":
             database_commands(args, adt)
 
-    except Exception:
-        console.print_exception()
+    except Exception as error:
+        print(error)
 
 if __name__ == "__main__":
     main()

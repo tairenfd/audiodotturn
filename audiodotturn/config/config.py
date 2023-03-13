@@ -57,7 +57,9 @@ class ConfigUser(ConfigBase):
                     self.userconfig.read(path)
                     self.path = path
                     break
-    
+            if self.path is None:
+                self.path = pkg_resources.resource_filename(__name__, "config.ini")
+
     @property
     def config_path(self):
         if self.path is None:

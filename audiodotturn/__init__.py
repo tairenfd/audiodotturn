@@ -1,2 +1,2 @@
 from audiodotturn.adt import AudioDotTurn
-__version__ = VERSION = "0.5.1"
+__version__ = VERSION = "0.5.2"

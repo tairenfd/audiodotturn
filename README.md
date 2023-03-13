@@ -1,4 +1,4 @@
-audiodotturn 0.5.2
+audiodotturn 0.5.3
 ==================
 
 General tool/library for extracting simple metadata and producing new file formats from only a filename(s).

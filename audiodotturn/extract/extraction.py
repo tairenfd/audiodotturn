@@ -8,25 +8,6 @@ class Extractor:
     """
     A class for extracting metadata from file names.
 
-    Methods:
-        __init__(exts: LiteralString = None)
-            Initializes an instance of the Extractor class with an optional list of file extensions.
-        
-        get_extraction(opt: str = "dict") -> Union[str, List, Dict]
-            Returns the extracted data in a specified format.
-        
-        false_extract(_file: LiteralString) -> Dict[str, Union[str, Any]]
-            Sets the most current extraction as unsuccessful and sets the `extracted_data` attribute with the extracted data.
-        
-        true_extract(info: List[Any]) -> Dict[str, Union[str, Any]]
-            Sets the most current extraction as successful and sets the `extracted_data` attribute with the extracted data.
-        
-        simple_extract(_file: LiteralString) -> List[Any]
-            Performs a simple extraction of metadata from a file name. The extracted data is set to the `extracted_data` attribute.
-        
-        complex_extract(filename: LiteralString) -> None
-            Performs a complex extraction of metadata from a file name. The extracted data is set to the `extracted_data` attribute.
-
     Attributes:
         exts: Tuple of strings
             The file extensions that the extractor class will attempt to extract metadata from.
@@ -53,7 +34,8 @@ class Extractor:
 
     def get_extraction(self, opt: str = "dict"):
         """
-        Returns the currently extracted data in a specified format.
+        Returns the last extraction performed in the extraction instance
+        in a specified format.
 
         Parameters:
             opt: str, optional

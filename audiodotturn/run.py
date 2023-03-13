@@ -2,6 +2,9 @@
 Basically used for all print handling
 """
 import os
+from typing import List, Dict
+from io import StringIO
+from datetime import datetime
 from rich.console import Console
 from rich.theme import Theme
 from rich.progress import track
@@ -60,7 +63,7 @@ def extract_commands(args, adt: AudioDotTurn):
 
     elif args.multi:
         extractions = adt.extract_files(args.multi, opt)
-        adt.produce_extract_report(extractions, console)
+        produce_extract_report(extractions, console)
         for extracted in extractions:
             if extracted["status"]:
                 success += 1
@@ -76,7 +79,7 @@ def extract_commands(args, adt: AudioDotTurn):
             return
 
         extractions = adt.extract_files(files, opt)
-        adt.produce_extract_report(extractions, console)
+        produce_extract_report(extractions, console)
         for extracted in extractions:
             if extracted["status"]:
                 success += 1
@@ -102,17 +105,17 @@ def construct_commands(args, adt: AudioDotTurn):
         extraction = adt.extract_file(args.file)
     elif args.multi:
         extraction = adt.extract_files(args.multi)
-        adt.produce_extract_report(extraction, console)
+        produce_extract_report(extraction, console)
     elif args.dir:
         extraction = adt.extract_file([file for file in os.listdir(args.dir) if os.path.isfile(os.path.join(args.dir, file)) and file.endswith(tuple(adt.config.exts))])
-        adt.produce_extract_report(extraction, console)
+        produce_extract_report(extraction, console)
 
     if not any((args.file, args.multi)):
         return
 
     results = adt.construct(constructor_type, extraction, args.auto)
 
-    success, failure = adt.produce_construct_report(results, console, args)
+    success, failure = produce_construct_report(results, console, args)
 
     if success == 0 and failure == 0:
         console.print("\n[bold red]Run aborted.")
@@ -223,6 +226,177 @@ def database_commands(args, adt: AudioDotTurn):
         else:
             console.print("None found.\n", style="info")
 
+def produce_construct_report(results, console, args):
+    """
+    Produce report of constructions. Options are html, svg, txt, or console.
+
+    ONLY FOR USE WITH CLI CLIENT        
+    """
+    success = 0
+    failure = 0
+
+    report_type = input(
+        "\nHow would you like to process the constructions(s)?\nOutput will be sent to working directory named 'construct_report.[ext]' if a file.\nOptions: html, text, svg, console\nFor none press enter. "
+    )
+    match report_type.lower().strip():
+        case "html":
+            report_type = "html"
+        case "svg":
+            report_type = "svg"
+        case "text":
+            report_type = "text"
+        case "console":
+            report_type = "console"
+        case _:
+            report_type = None
+
+    if report_type is not None:
+        if report_type == "console":
+            if not args.auto:
+                if results["success"]:
+                    if args.multi:
+                        for result in results["success"]:
+                            console.print(f"\n[cyan]Original File: [magenta]{result[0]}\n")
+                            console.print("Options created:", style="cyan")
+                            for option in result[1]:
+                                console.print(option, style="success")
+                            success += 1
+                    else:
+                        console.print(f"\nOriginal File: {results['success'][0][0]}\n")
+                        console.print("Options created:", style="cyan")
+                        for option in results["success"][0][1]:
+                            console.print(option, style="success")
+                        success += 1
+                    console.print('\n')
+            else:
+                if results["success"]:
+                    if args.multi:
+                        for result in results["success"]:
+                            console.print(f'[magenta]"{result[0]}" => [success]"{result[1]}"\n')
+                        success += 1
+                    else:
+                        console.print(f'[magenta]{results["success"][0][0]} => [success]{results["success"][0][1]}', style="success")
+                        success += 1
+
+                    console.print('\n')
+
+            if results["failure"]:
+                for result in results["failure"]:
+                    failure += 1
+                    console.print(f"\nFailed to construct: {result}\n", style="failure")
+        else:
+            record_console = Console(record=True, stderr=True, file=StringIO())
+            if not args.auto:
+                if results["success"]:
+                    if args.multi:
+                        for result in results["success"]:
+                            record_console.print(f"\n[cyan]Original File: [magenta]{result[0]}\n")
+                            record_console.print("Options created:", style="cyan")
+                            for option in result[1]:
+                                record_console.print(option, style="green")
+                            success += 1
+                    else:
+                        record_console.print(f"\nOriginal File: {results['success'][0][0]}\n")
+                        record_console.print("Options created:", style="cyan")
+                        for option in results["success"][0][1]:
+                            record_console.print(option, style="green")
+                        success += 1
+                    record_console.print('\n')
+            else:
+                if results["success"]:
+                    if args.multi:
+                        for result in results["success"]:
+                            record_console.print(f'[magenta]"{result[0]}" => [green]"{result[1]}"\n')
+                            success += 1
+                    else:
+                        record_console.print(f'[magenta]{results["success"][0][0]} => [success]{results["success"][0][1]}', style="success")
+                        success += 1
+
+                    record_console.print('\n')
+
+            if results["failure"]:
+                for result in results["failure"]:
+                    failure += 1
+                    record_console.print(f"\nFailed to construct: {result}\n", style="red")
+
+            match report_type:
+                case "html":
+                    record = record_console.export_html()
+                case "svg":
+                    record = record_console.export_svg()
+                case "txt":
+                    record = record_console.export_text()
+                case _:
+                    record = False
+
+            if record:
+                with open(f"construct_report.{report_type}", "wt") as report:
+                    report.write(record)
+
+    return success, failure
+
+
+def produce_extract_report(extractions: List[Dict], console):
+    """
+    Produce report of extractions list. Options are html, svg, txt, or console.
+
+    ONLY FOR USE WITH CLI CLIENT
+    """
+
+    report_type = input(
+        "\nHow would you like to process the extraction(s)?\nOutput will be sent to working directory named 'extract_report.[ext]' if a file.\nOptions: html, text, svg, console\nFor none press enter. "
+    )
+    match report_type.lower().strip():
+        case "html":
+            report_type = "html"
+        case "svg":
+            report_type = "svg"
+        case "text":
+            report_type = "text"
+        case "console":
+            report_type = "console"
+        case _:
+            report_type = None
+
+
+    if report_type is not None:
+        if report_type == "console":
+            console.print('Extracted Info:', style="cyan")
+
+
+            for extracted in extractions:
+                for key, value in extracted.items():
+                    console.print(key, ':', value, style="success")
+                
+                console.print('\n')
+        else:
+            record_console = Console(record=True, stderr=True, file=StringIO())
+            record_console.rule('Extracted Info:', style="cyan")
+
+            for extracted in extractions:
+                for key, value in extracted.items():
+                    record_console.print(key, ':', value, style="bold green")
+                
+                record_console.print('\n')
+            record_console.rule(f"Report Generated {datetime.now().ctime()}")
+
+
+            match report_type:
+                case "html":
+                    record = record_console.export_html()
+                case "svg":
+                    record = record_console.export_svg()
+                case "txt":
+                    record = record_console.export_text()
+                case _:
+                    record = False
+
+            if record:
+                with open(f"extract_report.{report_type}", "wt") as report:
+                    report.write(record)
+    
+    else:
+        console.print("No report generated.", style="yellow")
 
 def main():
     """

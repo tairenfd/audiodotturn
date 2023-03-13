@@ -1,1 +1,1 @@
-from adt.config.config import ConfigUser
+from audiodotturn.config.config import ConfigUser

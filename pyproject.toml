@@ -45,7 +45,7 @@ repository = "https://github.com/tairenfd/audiodotturn"
 
 [tool.setuptools.dynamic]
 version = {attr = "adt.VERSION"}
-readme = {file = ["README.md"]}
+readme = {file = ["README.md", "USAGE.md"]}
 
 [tool.setuptools]
 include-package-data = true

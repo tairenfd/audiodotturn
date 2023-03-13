@@ -15,31 +15,6 @@ class Constructor:
             A flag for whether or not to perform auto-construction.
         constructor : LiteralString
             A string representing the constructor style to use.
-
-    Methods:
-        __init__(self, data_list: List, constructor: LiteralString, auto: bool = False) -> None:
-            Initializes a new instance of the Constructor class.
-
-        from_dict(self):
-            Constructs new filenames from a list of one or more dicts or JSON datasets.
-
-        run(
-            self,
-            original_file: LiteralString,
-            artist: LiteralString,
-            title: LiteralString,
-            features: LiteralString,
-            misc: LiteralString,
-            filetype: LiteralString,
-            youtube_id: LiteralString
-        ) -> tuple:
-            Constructs a new filename from extracted values.
-
-        get_success(self):
-            Returns the list of successful constructions.
-
-        get_failure(self):
-            Returns the list of unsuccessful constructions.
     """
     def __init__(self, data_list: List, constructor: LiteralString, auto: bool = False) -> None:
         """

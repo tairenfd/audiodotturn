@@ -44,8 +44,8 @@ repository = "https://github.com/tairenfd/audiodotturn"
 
 
 [tool.setuptools.dynamic]
-version = {attr = "adt.VERSION"}
-readme = {file = ["README.md", "USAGE.md"]}
+version = {attr = "audiodotturn.VERSION"}
+readme = {file = ["README.md", "USAGE.md", "EXAMPLES.md"]}
 
 [tool.setuptools]
 include-package-data = true
@@ -54,4 +54,4 @@ include-package-data = true
 find = {}
 
 [project.scripts]
-adt = 'adt.run:main'
+adt = 'audiodotturn.run:main'
